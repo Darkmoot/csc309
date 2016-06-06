@@ -114,8 +114,9 @@ function Planet(x, y) {
 	ctx.arc(x+mid_offset, y+mid_offset, 20, 0, Math.PI);
 	ctx.clip;
 	//Set gradient and fill
-	var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
+	var gradient = ctx.createLinearGradient(x, y, x, y+50);
     gradient.addColorStop(0,"red");
+    gradient.addColorStop(1/2, '#F4A460');
     gradient.addColorStop(1,"gray");
     ctx.fillStyle = gradient;
 	ctx.stroke();
