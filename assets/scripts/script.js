@@ -33,10 +33,6 @@ if (typeof(Storage) !== "undefined") {
     var c = document.getElementById("level_one_canvas");
     window.ctx = c.getContext("2d");
     
-    
-    
- // Testing drawing
-    Spaceship(10, 10);
 }
 
 
@@ -110,42 +106,49 @@ function Spaceship(x, y) {
 
 //Draw planet with rings
 function Planet(x, y) {
+	var mid_offset = 25;
 	ctx.beginPath();
 	//Ring #1
-	ctx.moveTo(x+25, y+25-10/2);
+	var width = 40;
+	var height = 5;
+	ctx.moveTo(x+mid_offset, y+mid_offset-height);
 	ctx.bezierCurveTo(
-			x+25+80/2, y+25-10/2,
-			x+25+80/2, y+25+10/2,
-			x+25, y+25+10/2);
+			x+mid_offset+width, y+mid_offset-height,
+			x+mid_offset+width, y+mid_offset+height,
+			x+mid_offset, y+mid_offset+height);
 	ctx.bezierCurveTo(
-			x+25-80/2, y+25+10/2,
-			x+25-80/2, y+25-10/2,
-			x+25, y+25-10/2);
+			x+mid_offset-width, y+mid_offset+height,
+			x+mid_offset-width, y+mid_offset-height,
+			x+mid_offset, y+mid_offset-height);
 	//Ring #2
-	ctx.moveTo(x+25, y+25-15/2);
+	width = 42.5;
+	height = 7.5;
+	ctx.moveTo(x+mid_offset, y+mid_offset-height);
 	ctx.bezierCurveTo(
-			x+25+85/2, y+25-15/2,
-			x+25+85/2, y+25+15/2,
-			x+25, y+25+15/2);
+			x+mid_offset+width, y+mid_offset-height,
+			x+mid_offset+width, y+mid_offset+height,
+			x+mid_offset, y+mid_offset+height);
 	ctx.bezierCurveTo(
-			x+25-85/2, y+25+15/2,
-			x+25-85/2, y+25-15/2,
-			x+25, y+25-15/2);	
+			x+mid_offset-width, y+mid_offset+height,
+			x+mid_offset-width, y+mid_offset-height,
+			x+mid_offset, y+mid_offset-height);	
 	//Ring #2
-	ctx.moveTo(x+25, y+25-20/2);
+	width = 45;
+	height = 10;
+	ctx.moveTo(x+mid_offset, y+mid_offset-height);
 	ctx.bezierCurveTo(
-			x+25+90/2, y+25-20/2,
-			x+25+90/2, y+25+20/2,
-			x+25, y+25+20/2);
+			x+mid_offset+width, y+mid_offset-height,
+			x+mid_offset+width, y+mid_offset+height,
+			x+mid_offset, y+mid_offset+height);
 	ctx.bezierCurveTo(
-			x+25-90/2, y+25+20/2,
-			x+25-90/2, y+25-20/2,
-			x+25, y+25-20/2);
+			x+mid_offset-width, y+mid_offset+height,
+			x+mid_offset-width, y+mid_offset-height,
+			x+mid_offset, y+mid_offset-height);
 	
 	ctx.stroke();	
 	//Draw main body
 	ctx.beginPath();
-	ctx.arc(x+25, y+25, 20, 0, 2*Math.PI);
+	ctx.arc(x+mid_offset, y+mid_offset, 20, 0, 2*Math.PI);
 	ctx.stroke();
 	//Fill main body
     var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
