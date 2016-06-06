@@ -170,21 +170,26 @@ function Planet(x, y) {
 }
 
 function Moon(x, y) {
+	//Outer crescent
 	ctx.beginPath();
-	ctx.arc(x+25, y+25, 20, 1.75*Math.PI, 1.25*Math.PI);
+	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
 	ctx.stroke();
-    /* 
+	     
     var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
     gradient.addColorStop(0,"white");
     gradient.addColorStop(1,"gray");
     ctx.fillStyle = gradient;
     ctx.fill();
-    */
+    
 	ctx.closePath();
+	//Inner crescent
 	ctx.beginPath();
-	ctx.arc(x+25, y+16, 15, 1.9*Math.PI, 1.1*Math.PI);
-	
+	ctx.arc(x+17, y+25, 15, 1.3*Math.PI, 0.7*Math.PI);
 	ctx.stroke();
+	gradient = ctx.createLinearGradient(x,y,x+50, y+50);
+	gradient.addColorStop(0, "white");
+	ctx.fillStyle = gradient;
+	ctx.fill();
 }
 
 /* Potentially necessary functions.
