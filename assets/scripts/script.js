@@ -107,6 +107,20 @@ function Spaceship(x, y) {
 //Draw planet with rings
 function Planet(x, y) {
 	var mid_offset = 25;
+	
+	//Draw upper half of planet and clip
+	ctx.save();
+	ctx.beginPath();
+	ctx.arc(x+mid_offset, y+mid_offset, 20, 0, Math.PI);
+	ctx.clip;
+	//Set gradient and fill
+	var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
+    gradient.addColorStop(0,"red");
+    gradient.addColorStop(1,"gray");
+    ctx.fillStyle = gradient;
+	ctx.stroke();
+	ctx.fill();
+	
 	ctx.beginPath();
 	//Ring #1
 	var width = 40;
@@ -144,16 +158,12 @@ function Planet(x, y) {
 			x+mid_offset-width, y+mid_offset+height,
 			x+mid_offset-width, y+mid_offset-height,
 			x+mid_offset, y+mid_offset-height);
-	
 	ctx.stroke();	
-	//Draw main body
+	//Draw lower half of planet
+	ctx.restore();
 	ctx.beginPath();
-	ctx.arc(x+mid_offset, y+mid_offset, 20, 0, 2*Math.PI);
+	ctx.arc(x+mid_offset, y+mid_offset, 20, Math.PI, 2*Math.PI);
 	ctx.stroke();
-	//Fill main body
-    var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
-    gradient.addColorStop(0,"red");
-    gradient.addColorStop(1,"gray");
     ctx.fillStyle = gradient;
     ctx.fill();
 }
