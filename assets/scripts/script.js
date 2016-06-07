@@ -1,4 +1,5 @@
 window.onload = function() {
+    debugger;
     
     /* Global variables */
     
@@ -6,8 +7,8 @@ window.onload = function() {
     window.ingame_time = 60;
     window.game_level = 0;
     window.game_score = 200;
-    
-    /* Global Methods */
+    // Array which stores the functions to be drawn
+    window.drawings = [moon, planet, spaceship];
 
     
 // Store and retrieve high score to/from local storage.
@@ -35,6 +36,17 @@ if (typeof(Storage) !== "undefined") {
     
 }
 
+/* Global Methods */
+// Draw a new planet, spaceship, and moon every 1s
+    
+function drawSpaceObjects(){
+    for(i = 0; i < 10; i++) {
+        var x = Math.floor((Math.random() * 900) + 50);
+        var y = Math.floor((Math.random() * 500) + 50);
+        (window.drawings[Math.floor((Math.random() * 3))])(x, y);
+    }
+}
+
 
 function start() {
     document.getElementById("start_page").style.display = "none";
@@ -43,7 +55,9 @@ function start() {
     ingame_time = 60;
     // Call the drawCanvas function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
-    setInterval(drawCanvas, 1000);
+    drawCanvas();
+    drawSpaceObjects();
+    setInterval(drawTimer, 1000);
 }
 
 /*
@@ -60,15 +74,21 @@ function nextLevel() {
  *
  */
 function drawCanvas() {
-    ctx.clearRect(0, 0, 1000, 640);
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(0, 40, 1000, 640);
+    //ctx.clearRect(0, 0, 1000, 40);
+    //ctx.fillStyle = "#000000";
+    //ctx.fillRect(0, 40, 1000, 640);
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "1em Montserrat";
     ctx.textAlign = "center";
     ctx.fillText("Level " + game_level, 50, 30);
     ctx.fillText("Score: " + game_score, 300, 30);
     ctx.fillText("Pause", 700, 30);
+}
+
+function drawTimer() {
+    ctx.fillStyle = "#FFFFFF";
+    ctx.clearRect(850, 0, 1000, 40);
+    ctx.font = "1em Montserrat";
     timer();
     ctx.fillText(window.ingame_time, 900, 30);
 }
@@ -76,7 +96,7 @@ function drawCanvas() {
 /*
  * Draw spacecraft.
  */
-function Spaceship(x, y) {
+function spaceship(x, y) {
 	ctx.beginPath();
 	//Main body
     ctx.moveTo(x+10, y+20);
@@ -103,7 +123,7 @@ function Spaceship(x, y) {
 }
 
 //Draw planet with rings
-function Planet(x, y) {
+function planet(x, y) {
 	var mid_offset = 25;
     
 	//Draw upper half of planet and clip
@@ -176,7 +196,7 @@ function Planet(x, y) {
     ctx.fill();
 }
 
-function Moon(x, y) {
+function moon(x, y) {
 	ctx.beginPath();
 	ctx.arc(x+25, y+25, 20, 1.75*Math.PI, 1.25*Math.PI);
 	ctx.stroke();
