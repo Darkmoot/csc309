@@ -44,8 +44,6 @@ function start() {
     // Call the drawCanvas function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
     setInterval(drawCanvas, 1000);
-    }
-    
 }
 
 /*
@@ -107,7 +105,7 @@ function Spaceship(x, y) {
 //Draw planet with rings
 function Planet(x, y) {
 	var mid_offset = 25;
-	
+    
 	//Draw upper half of planet and clip
 	ctx.save();
 	ctx.beginPath();
@@ -160,6 +158,15 @@ function Planet(x, y) {
 			x+mid_offset-width, y+mid_offset-height,
 			x+mid_offset, y+mid_offset-height);
 	ctx.stroke();	
+	//Draw main body
+	ctx.beginPath();
+	ctx.arc(x+mid_offset, y+mid_offset, 20, 0, 2*Math.PI);
+	ctx.stroke();
+	//Fill main body
+    var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
+    gradient.addColorStop(0,"red");
+    gradient.addColorStop(1,"gray");
+	ctx.stroke();	
 	//Draw lower half of planet
 	ctx.restore();
 	ctx.beginPath();
@@ -170,17 +177,29 @@ function Planet(x, y) {
 }
 
 function Moon(x, y) {
+	ctx.beginPath();
+	ctx.arc(x+25, y+25, 20, 1.75*Math.PI, 1.25*Math.PI);
+	ctx.stroke();
+    /* 
+=======
 	//Outer crescent
 	ctx.beginPath();
 	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
 	ctx.stroke();
 	     
+>>>>>>> f0f008e5412cb8c3b1b4c5415d64be7f02061fc4
     var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
     gradient.addColorStop(0,"white");
     gradient.addColorStop(1,"gray");
     ctx.fillStyle = gradient;
     ctx.fill();
-    
+<<<<<<< HEAD
+    */
+	ctx.closePath();
+	ctx.beginPath();
+	ctx.arc(x+25, y+16, 15, 1.9*Math.PI, 1.1*Math.PI);
+	
+	ctx.stroke();
 	ctx.closePath();
 	//Inner crescent
 	ctx.beginPath();
