@@ -107,6 +107,21 @@ function Spaceship(x, y) {
 //Draw planet with rings
 function Planet(x, y) {
 	var mid_offset = 25;
+	
+	//Draw upper half of planet and clip
+	ctx.save();
+	ctx.beginPath();
+	ctx.arc(x+mid_offset, y+mid_offset, 20, 0, Math.PI);
+	ctx.clip;
+	//Set gradient and fill
+	var gradient = ctx.createLinearGradient(x, y, x, y+50);
+    gradient.addColorStop(0,"red");
+    gradient.addColorStop(1/2, '#F4A460');
+    gradient.addColorStop(1,"gray");
+    ctx.fillStyle = gradient;
+	ctx.stroke();
+	ctx.fill();
+	
 	ctx.beginPath();
 	//Ring #1
 	var width = 40;
@@ -144,36 +159,37 @@ function Planet(x, y) {
 			x+mid_offset-width, y+mid_offset+height,
 			x+mid_offset-width, y+mid_offset-height,
 			x+mid_offset, y+mid_offset-height);
-	
 	ctx.stroke();	
-	//Draw main body
+	//Draw lower half of planet
+	ctx.restore();
 	ctx.beginPath();
-	ctx.arc(x+mid_offset, y+mid_offset, 20, 0, 2*Math.PI);
+	ctx.arc(x+mid_offset, y+mid_offset, 20, Math.PI, 2*Math.PI);
 	ctx.stroke();
-	//Fill main body
-    var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
-    gradient.addColorStop(0,"red");
-    gradient.addColorStop(1,"gray");
     ctx.fillStyle = gradient;
     ctx.fill();
 }
 
 function Moon(x, y) {
+	//Outer crescent
 	ctx.beginPath();
-	ctx.arc(x+25, y+25, 20, 1.75*Math.PI, 1.25*Math.PI);
+	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
 	ctx.stroke();
-    /* 
+	     
     var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
     gradient.addColorStop(0,"white");
     gradient.addColorStop(1,"gray");
     ctx.fillStyle = gradient;
     ctx.fill();
-    */
+    
 	ctx.closePath();
+	//Inner crescent
 	ctx.beginPath();
-	ctx.arc(x+25, y+16, 15, 1.9*Math.PI, 1.1*Math.PI);
-	
+	ctx.arc(x+17, y+25, 15, 1.3*Math.PI, 0.7*Math.PI);
 	ctx.stroke();
+	gradient = ctx.createLinearGradient(x,y,x+50, y+50);
+	gradient.addColorStop(0, "white");
+	ctx.fillStyle = gradient;
+	ctx.fill();
 }
 
 /* Potentially necessary functions.
