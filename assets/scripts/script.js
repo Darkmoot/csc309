@@ -44,11 +44,6 @@ function start() {
     // Call the drawCanvas function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
     setInterval(drawCanvas, 1000);
-<<<<<<< HEAD
-=======
-    }
->>>>>>> f0f008e5412cb8c3b1b4c5415d64be7f02061fc4
-    
 }
 
 /*
