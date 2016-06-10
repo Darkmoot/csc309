@@ -8,7 +8,7 @@ window.onload = function() {
     window.game_level = 0;
     window.game_score = 200;
     // Array which stores the functions to be drawn
-    window.drawings = [moon, planet, spaceship, secondSpaceship];
+    window.drawings = [moon, planet, spaceship];
 
     
 // Store and retrieve high score to/from local storage.
@@ -115,11 +115,35 @@ function spaceship(x, y) {
     ctx.lineTo(x+15, y+30);
     //Stroke and fill with gradient
     ctx.stroke();
-    var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
-    gradient.addColorStop(0,"red");
-    gradient.addColorStop(1,"black");
-    ctx.fillStyle = gradient;
+    ctx.fillStyle = 'white';
     ctx.fill();
+    ctx.closePath();
+    
+    //Thruster
+    ctx.beginPath();
+    ctx.moveTo(x+10, y+22);
+    ctx.lineTo(x+5, y+20);
+    ctx.lineTo(x+5, y+30);
+    ctx.lineTo(x+10, y+28);
+    ctx.stroke();
+    ctx.fillStyle = 'black';
+    ctx.fill();
+    ctx.closePath();
+    
+    //Thruster fire
+    ctx.beginPath();
+    ctx.moveTo(x+5, y+23);
+    ctx.quadraticCurveTo(x+5, y+20, x, y+25);
+    ctx.moveTo(x+5, y+27);
+    ctx.quadraticCurveTo(x+5, y+30, x, y+25);
+    ctx.moveTo(x+5, y+27);
+    ctx.lineTo(x+5, y+23);
+    ctx.closePath();
+    ctx.fillStyle = 'blue';
+    ctx.fill();
+    
+    ctx.font = 'normal 7pt Times New Roman';
+    ctx.fillText('CSA', x+22, y+28);
 }
 
 //Draw planet with rings
@@ -127,10 +151,8 @@ function planet(x, y) {
 	var mid_offset = 25;
 	
 	//Draw upper half of planet and clip
-	ctx.save();
 	ctx.beginPath();
 	ctx.arc(x+mid_offset, y+mid_offset, 20, 0, Math.PI);
-	ctx.clip;
     
 	var gradient = ctx.createLinearGradient(x, y, x, y+50);
     gradient.addColorStop(0,"#800000");
@@ -183,17 +205,16 @@ function planet(x, y) {
 	
 	ctx.stroke();	
 	//Draw lower half of planet
-	ctx.restore();
 	ctx.beginPath();
 	ctx.arc(x+mid_offset, y+mid_offset, 20, Math.PI, 2*Math.PI);
 	ctx.stroke();
 	//Fill main body
     ctx.fillStyle = gradient;
     ctx.fill();
+    ctx.closePath();
 }
 
 function moon(x, y) {
-	ctx.save();
 	ctx.beginPath();
 	//Outer Crescent
 	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
@@ -211,7 +232,8 @@ function moon(x, y) {
 	ctx.stroke();
 	ctx.fill();
 	ctx.closePath();
-	ctx.restore();
+	//reset globalCompositeOperation to default
+	ctx.globalCompositeOperation = 'source-over';
 }
 
 /* Potentially necessary functions.
@@ -277,5 +299,5 @@ function secondSpaceship() {
     ctx.fill();
     ctx.strokeStyle = "1A1A59";
     ctx.stroke();
-    
+    ctx.closePath();
 }
