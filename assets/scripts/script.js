@@ -43,7 +43,7 @@ function drawSpaceObjects(){
     for(i = 0; i < 10; i++) {
         var x = Math.floor((Math.random() * 900) + 50);
         var y = Math.floor((Math.random() * 500) + 50);
-        (window.drawings[Math.floor((Math.random() * 4))])(x, y);
+        (window.drawings[Math.floor((Math.random() * 3))])(x, y);
     }
 }
 
@@ -134,9 +134,7 @@ function spaceship(x, y) {
     ctx.beginPath();
     ctx.moveTo(x+5, y+23);
     ctx.quadraticCurveTo(x+5, y+20, x, y+25);
-    ctx.moveTo(x+5, y+27);
-    ctx.quadraticCurveTo(x+5, y+30, x, y+25);
-    ctx.moveTo(x+5, y+27);
+    ctx.quadraticCurveTo(x+5, y+30, x+5, y+27);
     ctx.lineTo(x+5, y+23);
     ctx.closePath();
     ctx.fillStyle = 'blue';
