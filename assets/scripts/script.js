@@ -8,7 +8,7 @@ window.onload = function() {
     window.game_level = 0;
     window.game_score = 200;
     // Array which stores the functions to be drawn
-    window.drawings = [moon, planet, spaceship];
+    window.drawings = [moon, planet, spaceship, secondSpaceship];
 
     
 // Store and retrieve high score to/from local storage.
@@ -43,7 +43,7 @@ function drawSpaceObjects(){
     for(i = 0; i < 10; i++) {
         var x = Math.floor((Math.random() * 900) + 50);
         var y = Math.floor((Math.random() * 500) + 50);
-        (window.drawings[Math.floor((Math.random() * 3))])(x, y);
+        (window.drawings[Math.floor((Math.random() * 4))])(x, y);
     }
 }
 
@@ -244,4 +244,38 @@ function timer() {
         // nextLevel() when the timer hits 0.
         nextLevel();
     }
+}
+
+function secondSpaceship() {
+    ctx.beginPath();
+    ctx.moveTo(ctx.posX,20);
+    ctx.lineTo(45, 40); // trying to draw a diamond
+    ctx.lineTo(100, 30);
+    ctx.lineTo(65, 10);
+    ctx.lineTo(15, 20);
+    
+    
+    // colour in with a gradient
+    var grd=ctx.createLinearGradient(15, 10, 100, 50);
+    grd.addColorStop(0, "#565695");
+    grd.addColorStop(0.5, "#8080B3");
+    grd.addColorStop(1, "#09093B");
+    ctx.fillStyle=grd;
+    ctx.fill();
+    ctx.strokeStyle = "1A1A59";
+    ctx.stroke();
+    // add an arc
+    // ctx.arc(x, y, r, startangle, endangle);
+    ctx.beginPath();
+    ctx.arc(48, 25, 15, ((Math.PI)*7/6), (Math.PI)/12, false);
+    ctx.arc(52, 8, 20, ((Math.PI)/3), (Math.PI*11/13), false);
+    var grd2=ctx.createLinearGradient(33, 5, 63, 40);
+    grd2.addColorStop(0, "#565695");
+    grd2.addColorStop(0.5, "white");
+    grd2.addColorStop(1, "#09093B");
+    ctx.fillStyle=grd2;
+    ctx.fill();
+    ctx.strokeStyle = "1A1A59";
+    ctx.stroke();
+    
 }
