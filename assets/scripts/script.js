@@ -125,18 +125,21 @@ function spaceship(x, y) {
 //Draw planet with rings
 function planet(x, y) {
 	var mid_offset = 25;
-    
+	
 	//Draw upper half of planet and clip
 	ctx.save();
 	ctx.beginPath();
 	ctx.arc(x+mid_offset, y+mid_offset, 20, 0, Math.PI);
 	ctx.clip;
-	//Set gradient and fill
+    
 	var gradient = ctx.createLinearGradient(x, y, x, y+50);
-    gradient.addColorStop(0,"red");
-    gradient.addColorStop(1/2, '#F4A460');
-    gradient.addColorStop(1,"gray");
+    gradient.addColorStop(0,"#800000");
+    gradient.addColorStop(1/5, '#DAA520');
+    gradient.addColorStop(2/5,"#8B4513");
+    gradient.addColorStop(3/5, '#DAA520');
+    gradient.addColorStop(4/5, '#800000');
     ctx.fillStyle = gradient;
+    
 	ctx.stroke();
 	ctx.fill();
 	
@@ -177,51 +180,38 @@ function planet(x, y) {
 			x+mid_offset-width, y+mid_offset+height,
 			x+mid_offset-width, y+mid_offset-height,
 			x+mid_offset, y+mid_offset-height);
-	ctx.stroke();	
-	//Draw main body
-	ctx.beginPath();
-	ctx.arc(x+mid_offset, y+mid_offset, 20, 0, 2*Math.PI);
-	ctx.stroke();
-	//Fill main body
-    var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
-    gradient.addColorStop(0,"red");
-    gradient.addColorStop(1,"gray");
+	
 	ctx.stroke();	
 	//Draw lower half of planet
 	ctx.restore();
 	ctx.beginPath();
 	ctx.arc(x+mid_offset, y+mid_offset, 20, Math.PI, 2*Math.PI);
 	ctx.stroke();
+	//Fill main body
     ctx.fillStyle = gradient;
     ctx.fill();
 }
 
 function moon(x, y) {
+	ctx.save();
 	ctx.beginPath();
 	//Outer Crescent
 	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
-	ctx.stroke();
-	//Outer crescent
-	ctx.beginPath();
-	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
-	ctx.stroke();
-	
+	     
     var gradient = ctx.createLinearGradient(x, y, x+50, y+50);
     gradient.addColorStop(0,"white");
     gradient.addColorStop(1,"gray");
     ctx.fillStyle = gradient;
     ctx.fill();
     
-	ctx.closePath();
-	ctx.beginPath();
-	//Inner Crescent
-	ctx.arc(x+17, y+25, 15, 1.3*Math.PI, 0.7*Math.PI);
+    //Inner crescent
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x+17, y+25, 15, 0.7*Math.PI, 1.3*Math.PI, true);
 	ctx.stroke();
-
-	gradient = ctx.createLinearGradient(x,y,x+50, y+50);
-	gradient.addColorStop(0, "white");
-	ctx.fillStyle = gradient;
 	ctx.fill();
+	ctx.closePath();
+	ctx.restore();
 }
 
 /* Potentially necessary functions.
