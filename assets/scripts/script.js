@@ -3,8 +3,9 @@ window.onload = function() {
     
     /* Global variables */
     
-    // Initialize the canvas context.
-    var canvas = document.getElementById("level_one_canvas");
+    // Initialize the canvas and context.
+    window.canvas = document.getElementById("level_one_canvas");
+
     window.ctx = canvas.getContext("2d");
     // Initialize the timer to 60, game level to 0, score to 200.
     window.ingameTime = 60;
@@ -14,7 +15,9 @@ window.onload = function() {
     window.drawings = [moon, planet, spaceship];
     // Store the offset positions of x and y. Not sure how to use this yet.
     window.canvasLeft = canvas.offsetLeft;
-    window.canvasTop = canvas.offsetTop;
+    // Temporarily hard-coding this value since it's not giving me what I expect
+    window.canvasTop = 120;
+    window.parent = canvas.offsetParent;
     /* Initialize an array to store 10 arrays (indexed 0-9) of
      * each of the drawings and their corresponding left and top coords.
      *
@@ -52,7 +55,10 @@ if (typeof(Storage) !== "undefined") {
     //			(x > element.left) && (x < (element.left + element.width))) {
     //			alert("clicked on an element");
     //		}
-    //    });  
+    //    });
+    
+    // Detect mouse click events in the pause region.
+    window.canvas.addEventListener('click', pause, false);
     
 };
 
@@ -69,10 +75,8 @@ function pause(event) {
     x = canvasX - canvasLeft;
     y = canvasY - canvasTop;
     
-    //alert("canvasX:" + canvasX + "\ncanvasY:" + canvasY + "\ncanvasLeft:" + canvasLeft + "\ncanvasTop:" + canvasTop +
-    //      "\nx=" + x + "\ny=" + y);
-    //alert("canvasYStart:" + pauseYStart +"\ncanvasXStart" + pauseXStart);
-    //alert("canvasYEdge:" + pauseYEdge +"\ncanvasXEdge" + pauseXEdge);
+    alert("canvasX:" + canvasX + "\ncanvasY:" + canvasY + "\ncanvasLeft:" + canvasLeft + "\ncanvasTop:" + canvasTop +
+          "\nx=" + x + "\ny=" + y + "\ncanvasParent = " + window.parent);
     if ( (y > pauseYStart )&& (y < pauseYEdge) && (x > pauseXStart) && (x < pauseXEdge)) {
         alert("Pause Game");
     }
@@ -106,10 +110,11 @@ function start() {
     document.getElementById("level_one_page").style.display = "block";
     gameLevel = 1;
     ingameTime = 60;
-    // Call the drawCanvas function every second (every 1000 milliseconds)
-    // in order to decrement the game timer.
+
     drawCanvas();
     drawSpaceObjects();
+    // Call the drawTimer function every second (every 1000 milliseconds)
+    // in order to decrement the game timer.
     setInterval(drawTimer, 1000);
     
 }
@@ -134,7 +139,6 @@ function drawCanvas() {
     ctx.fillText("Level " + gameLevel, 50, 30);
     ctx.fillText("Score: " + gameScore, 300, 30);
     ctx.fillText("Pause", 700, 30);
-
 }
 
 /*
