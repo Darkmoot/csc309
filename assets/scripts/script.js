@@ -4,9 +4,11 @@ window.onload = function() {
     /* Global variables */
     
     // Initialize the canvas and context.
-    window.canvas = document.getElementById("level_one_canvas");
-
+    window.canvas = document.getElementById("levelOneCanvas");
     window.ctx = canvas.getContext("2d");
+    //Pause Canvas
+    window.pauseCanvas = document.getElementById("pauseCanvas");
+    window.pctx = pauseCanvas.getContext("2d");
     // Initialize the timer to 60, game level to 0, score to 200.
     window.ingameTime = 60;
     window.gameLevel = 0;
@@ -32,6 +34,8 @@ window.onload = function() {
     window.pauseYStart = 8;
     window.pauseYEdge = 38;
     window.paused = 0;
+    window.pausedDataURL = null;
+    window.pausedImage = new Image();
     
 // Store and retrieve high score to/from local storage.
 if (typeof(Storage) !== "undefined") {
@@ -49,8 +53,9 @@ if (typeof(Storage) !== "undefined") {
     document.getElementById("start_page").style.visibility = "visible";
     
     // Hide the level one and level two pages.
-    document.getElementById("level_one_page").style.display = "none";
+    document.getElementById("levelOnePage").style.display = "none";
     document.getElementById("level_two_page").style.display = "none";
+    document.getElementById("pausePage").style.display = "none";
     
     // Add event listener for click events.
     //ctx.addEventListener("click", pause, false);
@@ -68,6 +73,7 @@ if (typeof(Storage) !== "undefined") {
     
     window.canvas.addEventListener('click', pause, false);
     window.canvas.addEventListener('mousemove', pauseButtonHover, false);
+    window.pauseCanvas.addEventListener('click', pause, false);
     
 };
 
@@ -89,7 +95,8 @@ function pauseButtonHover(event) {
         ctx.fillStyle = "#ff6600";
         ctx.fillText("Pause", 700, 30);
     } else {
-        drawPause();
+        drawPause(ctx);
+        drawPause(pctx);
     }
 }
 // Pause
@@ -105,28 +112,42 @@ function pause(event) {
           "\nx=" + x + "\ny=" + y + "\ncanvasParent = " + window.parent);
     if ( (y > pauseYStart )&& (y < pauseYEdge) && (x > pauseXStart) && (x < pauseXEdge)) {
         if (window.paused === 0) {
+            window.pausedDataURL = canvas.toDataURL();
+            pausedImage.src = pausedDataURL;
+            pctx.drawImage(pausedImage, 0, 0);
+            document.getElementById("pausePage").style.display = "block";
+            document.getElementById("levelOnePage").style.display = "none";
             // Draw pause overlay
-            ctx.globalAlpha = 0.7;
-            ctx.fillStyle = "#FFFFFF";
-            ctx.fillRect(40, 40, 920, 560);
-            ctx.globalAlpha = 1;
-            ctx.fillStyle = "#FF6600";
-            ctx.font = "128px Montserrat";
-            ctx.fillText("PAUSED", 500, 300);
-            ctx.globalAlpha = 1;
-            ctx.beginPath();
-            ctx.moveTo(40, 40);
-            ctx.lineTo(960, 40);
-            ctx.lineTo(960, 600);
-            ctx.lineTo(40, 600);
-            ctx.closePath();
-            ctx.strokeStyle = "#FFFFFF";
-            ctx.stroke();
+            pctx.textAlign = "center";
+            pctx.globalAlpha = 0.7;
+            pctx.fillStyle = "#FFFFFF";
+            pctx.fillRect(40, 40, 920, 560);
+            pctx.globalAlpha = 1;
+            pctx.fillStyle = "#FF6600";
+            pctx.font = "128px Montserrat";
+            pctx.fillText("PAUSED", 500, 300);
+            pctx.globalAlpha = 1;
+            pctx.beginPath();
+            pctx.moveTo(40, 40);
+            pctx.lineTo(960, 40);
+            pctx.lineTo(960, 600);
+            pctx.lineTo(40, 600);
+            pctx.closePath();
+            pctx.strokeStyle = "#FFFFFF";
+            pctx.stroke();
             window.paused = 1;
-            alert("Pause Game");
         } else if(window.paused === 1) {
-            // Not sure how to erase overlay or if it's even possible to.
+            pctx.clearRect(665, 8, 70, 30);
+            pctx.fillStyle = "#ff6600";
+            pctx.fillRect(665, 8, 70, 30);
+            pctx.fillStyle = "#FFFFFF";
+            pctx.font = "1em Montserrat";
+            pctx.textAlign = "center";
+            pctx.fillText("Pause", 700, 30);
+            document.getElementById("levelOnePage").style.display = "block";
+            document.getElementById("pausePage").style.display = "none";
             window.paused = 0;
+            pctx.clearRect(0, 0, 1000, 640);
         }
     }
 }
@@ -156,7 +177,7 @@ function drawSpaceObjects(){
  */
 function start() {
     document.getElementById("start_page").style.display = "none";
-    document.getElementById("level_one_page").style.display = "block";
+    document.getElementById("levelOnePage").style.display = "block";
     gameLevel = 1;
     ingameTime = 60;
 
