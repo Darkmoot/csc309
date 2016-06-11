@@ -3,13 +3,25 @@ window.onload = function() {
     
     /* Global variables */
     
-    // Initiate the timer to 60, game level to 0, score to 200.
-    window.ingame_time = 60;
-    window.game_level = 0;
-    window.game_score = 200;
-    // Array which stores the functions to be drawn
+    // Initialize the canvas context.
+    var canvas = document.getElementById("level_one_canvas");
+    window.ctx = canvas.getContext("2d");
+    // Initialize the timer to 60, game level to 0, score to 200.
+    window.ingameTime = 60;
+    window.gameLevel = 0;
+    window.gameScore = 200;
+    // Store the functions to be drawn in an array.
     window.drawings = [moon, planet, spaceship];
-
+    // Store the offset positions of x and y. Not sure how to use this yet.
+    window.canvasLeft = canvas.offsetLeft;
+    window.canvasTop = canvas.offsetTop;
+    /* Initialize an array to store 10 arrays (indexed 0-9) of
+     * each of the drawings and their corresponding left and top coords.
+     *
+     * You can draw each object with the information in this array:
+     * drawnDrawings[i][0](drawnDrawings[i][1], drawnDrawings[i][2]);
+     */
+    window.drawnDrawings = [];
     
 // Store and retrieve high score to/from local storage.
 if (typeof(Storage) !== "undefined") {
@@ -30,34 +42,76 @@ if (typeof(Storage) !== "undefined") {
     document.getElementById("level_one_page").style.display = "none";
     document.getElementById("level_two_page").style.display = "none";
     
-    // Initialize the canvas context.
-    var c = document.getElementById("level_one_canvas");
-    window.ctx = c.getContext("2d");
+    // Add event listener for click events.
+    //ctx.addEventListener("click", pause, false);
+        //var x = event.pageX - canvasLeft;
+        //var y = event.pageY - canvasTop;
+
+    //    drawings.forEach(function(element) {
+    //		if ((y > element.top) && (y < (element.top + element.height) )&&
+    //			(x > element.left) && (x < (element.left + element.width))) {
+    //			alert("clicked on an element");
+    //		}
+    //    });  
     
-}
+};
 
 /* Global Methods */
-// Draw a new planet, spaceship, and moon every 1s
+// Pause
+function pause(event) {
+    // Use pageX and pageY to get x and y coords of mouse when clicked. 
+    canvasX = event.pageX;
+    canvasY = event.pageY;
+    pauseXStart = 700;
+    pauseXEdge =  900;
+    pauseYStart =  0;
+    pauseYEdge =  40;
+    x = canvasX - canvasLeft;
+    y = canvasY - canvasTop;
     
+    //alert("canvasX:" + canvasX + "\ncanvasY:" + canvasY + "\ncanvasLeft:" + canvasLeft + "\ncanvasTop:" + canvasTop +
+    //      "\nx=" + x + "\ny=" + y);
+    //alert("canvasYStart:" + pauseYStart +"\ncanvasXStart" + pauseXStart);
+    //alert("canvasYEdge:" + pauseYEdge +"\ncanvasXEdge" + pauseXEdge);
+    if ( (y > pauseYStart )&& (y < pauseYEdge) && (x > pauseXStart) && (x < pauseXEdge)) {
+        alert("Pause Game");
+    }
+}
+
+/*
+ * Draw either a planet, spacecraft, or moon 10 times
+ * on a random position on the canvas.
+ * 
+ */    
 function drawSpaceObjects(){
     for(i = 0; i < 10; i++) {
         var x = Math.floor((Math.random() * 900) + 50);
         var y = Math.floor((Math.random() * 500) + 50);
-        (window.drawings[Math.floor((Math.random() * 3))])(x, y);
+        // Choose the function to draw and store it in a local variable.
+        var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
+        // Store the name of the function and its left and top values.
+        window.drawnDrawings[i] = [currDrawing, x, y];
+        // Draw.
+        currDrawing(x, y);
     }
 }
 
-
+/*
+ * Switch visibility from the start page to the game page and
+ * draw the initial canvas elements.
+ * 
+ */
 function start() {
     document.getElementById("start_page").style.display = "none";
     document.getElementById("level_one_page").style.display = "block";
-    game_level = 1;
-    ingame_time = 60;
+    gameLevel = 1;
+    ingameTime = 60;
     // Call the drawCanvas function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
     drawCanvas();
     drawSpaceObjects();
     setInterval(drawTimer, 1000);
+    
 }
 
 /*
@@ -66,31 +120,33 @@ function start() {
  */
 function nextLevel() {
     // drawLevelTwo();
-    game_level = 2;
+    gameLevel = 2;
 }
 
 /*
- * Draw the general parts of this game canvas.
+ * Draw the level, score, pause button elements.
  *
  */
 function drawCanvas() {
-    //ctx.clearRect(0, 0, 1000, 40);
-    //ctx.fillStyle = "#000000";
-    //ctx.fillRect(0, 40, 1000, 640);
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "1em Montserrat";
     ctx.textAlign = "center";
-    ctx.fillText("Level " + game_level, 50, 30);
-    ctx.fillText("Score: " + game_score, 300, 30);
+    ctx.fillText("Level " + gameLevel, 50, 30);
+    ctx.fillText("Score: " + gameScore, 300, 30);
     ctx.fillText("Pause", 700, 30);
+
 }
 
+/*
+ * Draw the current ingame time.
+ *
+ */
 function drawTimer() {
     ctx.fillStyle = "#FFFFFF";
     ctx.clearRect(850, 0, 1000, 40);
     ctx.font = "1em Montserrat";
     timer();
-    ctx.fillText(window.ingame_time, 900, 30);
+    ctx.fillText(window.ingameTime, 900, 30);
 }
 
 /*
@@ -234,68 +290,16 @@ function moon(x, y) {
 	ctx.globalCompositeOperation = 'source-over';
 }
 
-/* Potentially necessary functions.
-function drawLevelOne() {
-}
-
-function drawLevelTwo() {
-}
-
-function drawPauseOverlay() {
-}
-
-function pause() {
-    
-}
-
-function transitionLevel() {
-}
-*/
-
 /*
  * Decrement in-game time by 1.
  *
  */
 function timer() {
-    if(window.ingame_time > 0)  {
-    window.ingame_time = window.ingame_time - 1;
+    if(window.ingameTime > 0)  {
+    window.ingameTime = window.ingameTime - 1;
     } else {
         // When the transiton level screen is implemented, call that instead of
         // nextLevel() when the timer hits 0.
         nextLevel();
     }
-}
-
-function secondSpaceship() {
-    ctx.beginPath();
-    ctx.moveTo(ctx.posX,20);
-    ctx.lineTo(45, 40); // trying to draw a diamond
-    ctx.lineTo(100, 30);
-    ctx.lineTo(65, 10);
-    ctx.lineTo(15, 20);
-    
-    
-    // colour in with a gradient
-    var grd=ctx.createLinearGradient(15, 10, 100, 50);
-    grd.addColorStop(0, "#565695");
-    grd.addColorStop(0.5, "#8080B3");
-    grd.addColorStop(1, "#09093B");
-    ctx.fillStyle=grd;
-    ctx.fill();
-    ctx.strokeStyle = "1A1A59";
-    ctx.stroke();
-    // add an arc
-    // ctx.arc(x, y, r, startangle, endangle);
-    ctx.beginPath();
-    ctx.arc(48, 25, 15, ((Math.PI)*7/6), (Math.PI)/12, false);
-    ctx.arc(52, 8, 20, ((Math.PI)/3), (Math.PI*11/13), false);
-    var grd2=ctx.createLinearGradient(33, 5, 63, 40);
-    grd2.addColorStop(0, "#565695");
-    grd2.addColorStop(0.5, "white");
-    grd2.addColorStop(1, "#09093B");
-    ctx.fillStyle=grd2;
-    ctx.fill();
-    ctx.strokeStyle = "1A1A59";
-    ctx.stroke();
-    ctx.closePath();
 }
