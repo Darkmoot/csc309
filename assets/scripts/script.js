@@ -26,6 +26,13 @@ window.onload = function() {
      */
     window.drawnDrawings = [];
     
+    //Pause Button coords
+    window.pauseXStart = 665;
+    window.pauseXEdge = 735;
+    window.pauseYStart = 8;
+    window.pauseYEdge = 38;
+    window.paused = 0;
+    
 // Store and retrieve high score to/from local storage.
 if (typeof(Storage) !== "undefined") {
     // Store
@@ -58,27 +65,69 @@ if (typeof(Storage) !== "undefined") {
     //    });
     
     // Detect mouse click events in the pause region.
+    
     window.canvas.addEventListener('click', pause, false);
+    window.canvas.addEventListener('mousemove', pauseButtonHover, false);
     
 };
 
-/* Global Methods */
+
+// Emphasize pause button
+function pauseButtonHover(event) {
+    x = event.pageX - canvasLeft;
+    y = event.pageY - canvasTop;
+
+    if ( (y > pauseYStart )&& (y < pauseYEdge) && (x > pauseXStart) && (x < pauseXEdge)) {
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.moveTo(665, 8);
+        ctx.lineTo(735, 8);
+        ctx.lineTo(735, 38);
+        ctx.lineTo(665, 38);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#ff6600";
+        ctx.fillText("Pause", 700, 30);
+    } else {
+        drawPause();
+    }
+}
 // Pause
 function pause(event) {
     // Use pageX and pageY to get x and y coords of mouse when clicked. 
     canvasX = event.pageX;
     canvasY = event.pageY;
-    pauseXStart = 700;
-    pauseXEdge =  900;
-    pauseYStart =  0;
-    pauseYEdge =  40;
+
     x = canvasX - canvasLeft;
     y = canvasY - canvasTop;
     
     alert("canvasX:" + canvasX + "\ncanvasY:" + canvasY + "\ncanvasLeft:" + canvasLeft + "\ncanvasTop:" + canvasTop +
           "\nx=" + x + "\ny=" + y + "\ncanvasParent = " + window.parent);
     if ( (y > pauseYStart )&& (y < pauseYEdge) && (x > pauseXStart) && (x < pauseXEdge)) {
-        alert("Pause Game");
+        if (window.paused === 0) {
+            // Draw pause overlay
+            ctx.globalAlpha = 0.7;
+            ctx.fillStyle = "#FFFFFF";
+            ctx.fillRect(40, 40, 920, 560);
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = "#FF6600";
+            ctx.font = "128px Montserrat";
+            ctx.fillText("PAUSED", 500, 300);
+            ctx.globalAlpha = 1;
+            ctx.beginPath();
+            ctx.moveTo(40, 40);
+            ctx.lineTo(960, 40);
+            ctx.lineTo(960, 600);
+            ctx.lineTo(40, 600);
+            ctx.closePath();
+            ctx.strokeStyle = "#FFFFFF";
+            ctx.stroke();
+            window.paused = 1;
+            alert("Pause Game");
+        } else if(window.paused === 1) {
+            // Not sure how to erase overlay or if it's even possible to.
+            window.paused = 0;
+        }
     }
 }
 
@@ -133,11 +182,28 @@ function nextLevel() {
  *
  */
 function drawCanvas() {
+    ctx.clearRect(0, 0, 1000, 40);
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "1em Montserrat";
     ctx.textAlign = "center";
     ctx.fillText("Level " + gameLevel, 50, 30);
     ctx.fillText("Score: " + gameScore, 300, 30);
+    drawPause();
+}
+
+function drawPause(){
+    ctx.clearRect(665, 8, 70, 30);
+    ctx.fillStyle = "#ff6600";
+    ctx.beginPath();
+    ctx.moveTo(665, 8);
+    ctx.lineTo(735, 8);
+    ctx.lineTo(735, 38);
+    ctx.lineTo(665, 38);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "1em Montserrat";
+    ctx.textAlign = "center";
     ctx.fillText("Pause", 700, 30);
 }
 
@@ -146,11 +212,13 @@ function drawCanvas() {
  *
  */
 function drawTimer() {
-    ctx.fillStyle = "#FFFFFF";
-    ctx.clearRect(850, 0, 1000, 40);
-    ctx.font = "1em Montserrat";
-    timer();
-    ctx.fillText(window.ingameTime, 900, 30);
+    if (window.paused === 0) {
+        ctx.fillStyle = "#FFFFFF";
+        ctx.clearRect(850, 0, 1000, 40);
+        ctx.font = "1em Montserrat";
+        timer();
+        ctx.fillText(window.ingameTime, 900, 30);
+    } 
 }
 
 /*
