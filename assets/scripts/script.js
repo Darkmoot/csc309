@@ -85,6 +85,7 @@ function pauseButtonHover(event) {
 
     if ( (y > pauseYStart )&& (y < pauseYEdge) && (x > pauseXStart) && (x < pauseXEdge)) {
         ctx.fillStyle = "#FFFFFF";
+        ctx.font = "1em Montserrat";
         ctx.beginPath();
         ctx.moveTo(665, 8);
         ctx.lineTo(735, 8);
@@ -95,8 +96,7 @@ function pauseButtonHover(event) {
         ctx.fillStyle = "#ff6600";
         ctx.fillText("Pause", 700, 30);
     } else {
-        drawPause(ctx);
-        drawPause(pctx);
+        drawPause();
     }
 }
 // Pause
@@ -152,21 +152,56 @@ function pause(event) {
     }
 }
 
+function initSpaceObjects() {
+    for(i = 0; i < 10; i++) {
+        var x = Math.floor((Math.random() * 900) + 50);
+        var y = Math.floor((Math.random() * 500) + 50);
+        var tx = Math.floor((Math.random() * 2));
+        var ty = Math.floor((Math.random() * 2));
+        // Choose the function to draw and store it in a local variable.
+        var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
+        // Store the name of the function and its left and top values.
+        window.drawnDrawings[i] = [currDrawing, x, y, tx, ty];
+    }
+}
+
 /*
  * Draw either a planet, spacecraft, or moon 10 times
  * on a random position on the canvas.
  * 
  */    
 function drawSpaceObjects(){
+    ctx.clearRect(0, 40, 1000, 600);
     for(i = 0; i < 10; i++) {
-        var x = Math.floor((Math.random() * 900) + 50);
-        var y = Math.floor((Math.random() * 500) + 50);
-        // Choose the function to draw and store it in a local variable.
-        var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
-        // Store the name of the function and its left and top values.
-        window.drawnDrawings[i] = [currDrawing, x, y];
+        drawing = drawnDrawings[i][0];
+        x = drawnDrawings[i][1];
+        y = drawnDrawings[i][2];
+        tx = drawnDrawings[i][3];
+        ty = drawnDrawings[i][4];
+        // Check for collision with canvas walls.
+        if (((x + 50) === 1000) || (x === 0) ) {
+            tx = ty;
+            // Invert direction
+            //if!(tx === ty) {
+            //    if(tx === 0) {
+            //        tx = 1;
+            //    }
+            //    if(tx === 1) {
+            //        tx = 0;
+            //    }
+            //    if(ty === 0) {
+            //        ty = 1;
+            //    }
+            //    if(ty === 1) {
+            //        ty = 0;
+            //    }
+            //}
+        }
+        if (((y + 50) === 640) || (y === 41) ) {
+            ty = tx;
+        }
         // Draw.
-        currDrawing(x, y);
+        drawing(x, y, tx, ty);
     }
 }
 
@@ -182,7 +217,9 @@ function start() {
     ingameTime = 60;
 
     drawCanvas();
-    drawSpaceObjects();
+    initSpaceObjects();
+    setInterval(drawSpaceObjects, 33);
+    //requestAnimationFrame(drawSpaceObjects);
     // Call the drawTimer function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
     setInterval(drawTimer, 1000);
@@ -245,7 +282,8 @@ function drawTimer() {
 /*
  * Draw spacecraft.
  */
-function spaceship(x, y) {
+function spaceship(x, y, tx, ty) {
+    ctx.save();
 	ctx.beginPath();
 	//Main body
     ctx.moveTo(x+10, y+20);
@@ -291,10 +329,14 @@ function spaceship(x, y) {
     
     ctx.font = 'normal 7pt Times New Roman';
     ctx.fillText('CSA', x+22, y+28);
+    
+    ctx.translate(tx, ty);
+    ctx.restore();
 }
 
 //Draw planet with rings
-function planet(x, y) {
+function planet(x, y, tx, ty) {
+    ctx.save();
 	var mid_offset = 25;
 	
 	//Draw upper half of planet and clip
@@ -359,9 +401,13 @@ function planet(x, y) {
     ctx.fillStyle = gradient;
     ctx.fill();
     ctx.closePath();
+    
+    ctx.translate(tx, ty);
+    ctx.restore();
 }
 
-function moon(x, y) {
+function moon(x, y, tx, ty) {
+    ctx.save();
 	ctx.beginPath();
 	//Outer Crescent
 	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
@@ -381,6 +427,9 @@ function moon(x, y) {
 	ctx.closePath();
 	//reset globalCompositeOperation to default
 	ctx.globalCompositeOperation = 'source-over';
+    
+    ctx.translate(tx, ty);
+    ctx.restore();
 }
 
 /*
