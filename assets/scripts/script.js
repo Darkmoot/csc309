@@ -156,8 +156,8 @@ function initSpaceObjects() {
     for(i = 0; i < 10; i++) {
         var x = Math.floor((Math.random() * 900) + 50);
         var y = Math.floor((Math.random() * 500) + 50);
-        var tx = Math.floor((Math.random() * 2));
-        var ty = Math.floor((Math.random() * 2));
+        var tx = Math.random();
+        var ty = Math.random();
         // Choose the function to draw and store it in a local variable.
         var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
         // Store the name of the function and its left and top values.
@@ -407,7 +407,6 @@ function planet(x, y, tx, ty) {
 }
 
 function moon(x, y, tx, ty) {
-    ctx.save();
 	ctx.beginPath();
 	//Outer Crescent
 	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
@@ -428,8 +427,8 @@ function moon(x, y, tx, ty) {
 	//reset globalCompositeOperation to default
 	ctx.globalCompositeOperation = 'source-over';
     
+
     ctx.translate(tx, ty);
-    ctx.restore();
 }
 
 /*
