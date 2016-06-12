@@ -4,9 +4,11 @@ window.onload = function() {
     /* Global variables */
     
     // Initialize the canvas and context.
-    window.canvas = document.getElementById("level_one_canvas");
-
+    window.canvas = document.getElementById("levelOneCanvas");
     window.ctx = canvas.getContext("2d");
+    //Pause Canvas
+    window.pauseCanvas = document.getElementById("pauseCanvas");
+    window.pctx = pauseCanvas.getContext("2d");
     // Initialize the timer to 60, game level to 0, score to 200.
     window.ingameTime = 60;
     window.gameLevel = 0;
@@ -26,6 +28,15 @@ window.onload = function() {
      */
     window.drawnDrawings = [];
     
+    //Pause Button coords
+    window.pauseXStart = 665;
+    window.pauseXEdge = 735;
+    window.pauseYStart = 8;
+    window.pauseYEdge = 38;
+    window.paused = 0;
+    window.pausedDataURL = null;
+    window.pausedImage = new Image();
+    
 // Store and retrieve high score to/from local storage.
 if (typeof(Storage) !== "undefined") {
     // Store
@@ -42,8 +53,9 @@ if (typeof(Storage) !== "undefined") {
     document.getElementById("start_page").style.visibility = "visible";
     
     // Hide the level one and level two pages.
-    document.getElementById("level_one_page").style.display = "none";
+    document.getElementById("levelOnePage").style.display = "none";
     document.getElementById("level_two_page").style.display = "none";
+    document.getElementById("pausePage").style.display = "none";
     
     // Add event listener for click events.
     //ctx.addEventListener("click", pause, false);
@@ -58,27 +70,98 @@ if (typeof(Storage) !== "undefined") {
     //    });
     
     // Detect mouse click events in the pause region.
+    
     window.canvas.addEventListener('click', pause, false);
+    window.canvas.addEventListener('mousemove', pauseButtonHover, false);
+    window.pauseCanvas.addEventListener('click', pause, false);
     
 };
 
-/* Global Methods */
+
+// Emphasize pause button
+function pauseButtonHover(event) {
+    x = event.pageX - canvasLeft;
+    y = event.pageY - canvasTop;
+
+    if ( (y > pauseYStart )&& (y < pauseYEdge) && (x > pauseXStart) && (x < pauseXEdge)) {
+        ctx.fillStyle = "#FFFFFF";
+        ctx.font = "1em Montserrat";
+        ctx.beginPath();
+        ctx.moveTo(665, 8);
+        ctx.lineTo(735, 8);
+        ctx.lineTo(735, 38);
+        ctx.lineTo(665, 38);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = "#ff6600";
+        ctx.fillText("Pause", 700, 30);
+    } else {
+        drawPause();
+    }
+}
 // Pause
 function pause(event) {
     // Use pageX and pageY to get x and y coords of mouse when clicked. 
     canvasX = event.pageX;
     canvasY = event.pageY;
-    pauseXStart = 700;
-    pauseXEdge =  900;
-    pauseYStart =  0;
-    pauseYEdge =  40;
+
     x = canvasX - canvasLeft;
     y = canvasY - canvasTop;
     
     alert("canvasX:" + canvasX + "\ncanvasY:" + canvasY + "\ncanvasLeft:" + canvasLeft + "\ncanvasTop:" + canvasTop +
           "\nx=" + x + "\ny=" + y + "\ncanvasParent = " + window.parent);
     if ( (y > pauseYStart )&& (y < pauseYEdge) && (x > pauseXStart) && (x < pauseXEdge)) {
-        alert("Pause Game");
+        if (window.paused === 0) {
+            window.pausedDataURL = canvas.toDataURL();
+            pausedImage.src = pausedDataURL;
+            pctx.drawImage(pausedImage, 0, 0);
+            document.getElementById("pausePage").style.display = "block";
+            document.getElementById("levelOnePage").style.display = "none";
+            // Draw pause overlay
+            pctx.textAlign = "center";
+            pctx.globalAlpha = 0.7;
+            pctx.fillStyle = "#FFFFFF";
+            pctx.fillRect(40, 40, 920, 560);
+            pctx.globalAlpha = 1;
+            pctx.fillStyle = "#FF6600";
+            pctx.font = "128px Montserrat";
+            pctx.fillText("PAUSED", 500, 300);
+            pctx.globalAlpha = 1;
+            pctx.beginPath();
+            pctx.moveTo(40, 40);
+            pctx.lineTo(960, 40);
+            pctx.lineTo(960, 600);
+            pctx.lineTo(40, 600);
+            pctx.closePath();
+            pctx.strokeStyle = "#FFFFFF";
+            pctx.stroke();
+            window.paused = 1;
+        } else if(window.paused === 1) {
+            pctx.clearRect(665, 8, 70, 30);
+            pctx.fillStyle = "#ff6600";
+            pctx.fillRect(665, 8, 70, 30);
+            pctx.fillStyle = "#FFFFFF";
+            pctx.font = "1em Montserrat";
+            pctx.textAlign = "center";
+            pctx.fillText("Pause", 700, 30);
+            document.getElementById("levelOnePage").style.display = "block";
+            document.getElementById("pausePage").style.display = "none";
+            window.paused = 0;
+            pctx.clearRect(0, 0, 1000, 640);
+        }
+    }
+}
+
+function initSpaceObjects() {
+    for(i = 0; i < 10; i++) {
+        var x = Math.floor((Math.random() * 900) + 50);
+        var y = Math.floor((Math.random() * 500) + 50);
+        var tx = Math.random();
+        var ty = Math.random();
+        // Choose the function to draw and store it in a local variable.
+        var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
+        // Store the name of the function and its left and top values.
+        window.drawnDrawings[i] = [currDrawing, x, y, tx, ty];
     }
 }
 
@@ -88,15 +171,37 @@ function pause(event) {
  * 
  */    
 function drawSpaceObjects(){
+    ctx.clearRect(0, 40, 1000, 600);
     for(i = 0; i < 10; i++) {
-        var x = Math.floor((Math.random() * 900) + 50);
-        var y = Math.floor((Math.random() * 500) + 50);
-        // Choose the function to draw and store it in a local variable.
-        var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
-        // Store the name of the function and its left and top values.
-        window.drawnDrawings[i] = [currDrawing, x, y];
+        drawing = drawnDrawings[i][0];
+        x = drawnDrawings[i][1];
+        y = drawnDrawings[i][2];
+        tx = drawnDrawings[i][3];
+        ty = drawnDrawings[i][4];
+        // Check for collision with canvas walls.
+        if (((x + 50) === 1000) || (x === 0) ) {
+            tx = ty;
+            // Invert direction
+            //if!(tx === ty) {
+            //    if(tx === 0) {
+            //        tx = 1;
+            //    }
+            //    if(tx === 1) {
+            //        tx = 0;
+            //    }
+            //    if(ty === 0) {
+            //        ty = 1;
+            //    }
+            //    if(ty === 1) {
+            //        ty = 0;
+            //    }
+            //}
+        }
+        if (((y + 50) === 640) || (y === 41) ) {
+            ty = tx;
+        }
         // Draw.
-        currDrawing(x, y);
+        drawing(x, y, tx, ty);
     }
 }
 
@@ -107,12 +212,14 @@ function drawSpaceObjects(){
  */
 function start() {
     document.getElementById("start_page").style.display = "none";
-    document.getElementById("level_one_page").style.display = "block";
+    document.getElementById("levelOnePage").style.display = "block";
     gameLevel = 1;
     ingameTime = 60;
 
     drawCanvas();
-    drawSpaceObjects();
+    initSpaceObjects();
+    setInterval(drawSpaceObjects, 33);
+    //requestAnimationFrame(drawSpaceObjects);
     // Call the drawTimer function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
     setInterval(drawTimer, 1000);
@@ -133,11 +240,28 @@ function nextLevel() {
  *
  */
 function drawCanvas() {
+    ctx.clearRect(0, 0, 1000, 40);
     ctx.fillStyle = "#FFFFFF";
     ctx.font = "1em Montserrat";
     ctx.textAlign = "center";
     ctx.fillText("Level " + gameLevel, 50, 30);
     ctx.fillText("Score: " + gameScore, 300, 30);
+    drawPause();
+}
+
+function drawPause(){
+    ctx.clearRect(665, 8, 70, 30);
+    ctx.fillStyle = "#ff6600";
+    ctx.beginPath();
+    ctx.moveTo(665, 8);
+    ctx.lineTo(735, 8);
+    ctx.lineTo(735, 38);
+    ctx.lineTo(665, 38);
+    ctx.closePath();
+    ctx.fill();
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "1em Montserrat";
+    ctx.textAlign = "center";
     ctx.fillText("Pause", 700, 30);
 }
 
@@ -146,17 +270,20 @@ function drawCanvas() {
  *
  */
 function drawTimer() {
-    ctx.fillStyle = "#FFFFFF";
-    ctx.clearRect(850, 0, 1000, 40);
-    ctx.font = "1em Montserrat";
-    timer();
-    ctx.fillText(window.ingameTime, 900, 30);
+    if (window.paused === 0) {
+        ctx.fillStyle = "#FFFFFF";
+        ctx.clearRect(850, 0, 1000, 40);
+        ctx.font = "1em Montserrat";
+        timer();
+        ctx.fillText(window.ingameTime, 900, 30);
+    } 
 }
 
 /*
  * Draw spacecraft.
  */
-function spaceship(x, y) {
+function spaceship(x, y, tx, ty) {
+    ctx.save();
 	ctx.beginPath();
 	//Main body
     ctx.moveTo(x+10, y+20);
@@ -202,10 +329,14 @@ function spaceship(x, y) {
     
     ctx.font = 'normal 7pt Times New Roman';
     ctx.fillText('CSA', x+22, y+28);
+    
+    ctx.translate(tx, ty);
+    ctx.restore();
 }
 
 //Draw planet with rings
-function planet(x, y) {
+function planet(x, y, tx, ty) {
+    ctx.save();
 	var mid_offset = 25;
 	
 	//Draw upper half of planet and clip
@@ -270,9 +401,12 @@ function planet(x, y) {
     ctx.fillStyle = gradient;
     ctx.fill();
     ctx.closePath();
+    
+    ctx.translate(tx, ty);
+    ctx.restore();
 }
 
-function moon(x, y) {
+function moon(x, y, tx, ty) {
 	ctx.beginPath();
 	//Outer Crescent
 	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
@@ -292,6 +426,9 @@ function moon(x, y) {
 	ctx.closePath();
 	//reset globalCompositeOperation to default
 	ctx.globalCompositeOperation = 'source-over';
+    
+
+    ctx.translate(tx, ty);
 }
 
 /*
