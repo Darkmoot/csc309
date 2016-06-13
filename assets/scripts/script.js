@@ -152,6 +152,48 @@ function pause(event) {
     }
 }
 
+//Create a class for space objects
+function object(x, y, tx, ty, type) {
+	this.x = x;
+	this.y = y;
+	this.tx = tx;
+	this.ty = ty;
+	this.type = type;
+}
+
+//Set an update function for space objects
+object.prototype.update = function() {
+	this.x = this.x+this.tx;
+	this.y = this.y+this.ty;
+  	this.type(this.x, this.y);
+  	//Change direction stuff would go here
+};
+
+function drawObjects() {
+	for (var i = 0; i < 10; i++) {
+        var randomX = Math.floor((Math.random() * 900) + 50);
+        var randomY = Math.floor((Math.random() * 500) + 50);
+		var randomTX = Math.round((Math.random() * 4) - 2);
+		var randomTY = Math.round((Math.random() * 4) - 2);
+		 // Choose the function to draw and store it in a local variable.
+		var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
+		// Create the object and push onto array
+		var obj = new object(randomX, randomY, randomTX, randomTY, currDrawing);
+		window.drawnDrawings.push(obj);
+	}
+	drawAndUpdate();
+}
+
+function drawAndUpdate() {
+	ctx.clearRect(0, 40, 1000, 600);
+	//Update each object's position
+	for (var i = 0; i < window.drawnDrawings.length; i++) {
+		var myObject = window.drawnDrawings[i];
+		myObject.update();
+	}
+	requestAnimationFrame(drawAndUpdate);
+}
+/*
 function initSpaceObjects() {
     for(i = 0; i < 10; i++) {
         var x = Math.floor((Math.random() * 900) + 50);
@@ -170,6 +212,7 @@ function initSpaceObjects() {
  * on a random position on the canvas.
  * 
  */    
+/*
 function drawSpaceObjects(){
     ctx.clearRect(0, 40, 1000, 600);
     for(i = 0; i < 10; i++) {
@@ -204,6 +247,7 @@ function drawSpaceObjects(){
         drawing(x, y, tx, ty);
     }
 }
+*/
 
 /*
  * Switch visibility from the start page to the game page and
@@ -217,7 +261,8 @@ function start() {
     ingameTime = 60;
 
     drawCanvas();
-    initSpaceObjects();
+    //initSpaceObjects();
+    drawObjects();
     setInterval(drawSpaceObjects, 33);
     //requestAnimationFrame(drawSpaceObjects);
     // Call the drawTimer function every second (every 1000 milliseconds)
@@ -282,8 +327,7 @@ function drawTimer() {
 /*
  * Draw spacecraft.
  */
-function spaceship(x, y, tx, ty) {
-    ctx.save();
+function spaceship(x, y) {
 	ctx.beginPath();
 	//Main body
     ctx.moveTo(x+10, y+20);
@@ -329,14 +373,10 @@ function spaceship(x, y, tx, ty) {
     
     ctx.font = 'normal 7pt Times New Roman';
     ctx.fillText('CSA', x+22, y+28);
-    
-    ctx.translate(tx, ty);
-    ctx.restore();
 }
 
 //Draw planet with rings
-function planet(x, y, tx, ty) {
-    ctx.save();
+function planet(x, y) {
 	var mid_offset = 25;
 	
 	//Draw upper half of planet and clip
@@ -401,13 +441,9 @@ function planet(x, y, tx, ty) {
     ctx.fillStyle = gradient;
     ctx.fill();
     ctx.closePath();
-    
-    ctx.translate(tx, ty);
-    ctx.restore();
 }
 
-function moon(x, y, tx, ty) {
-    ctx.save();
+function moon(x, y) {
 	ctx.beginPath();
 	//Outer Crescent
 	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
@@ -427,10 +463,6 @@ function moon(x, y, tx, ty) {
 	ctx.closePath();
 	//reset globalCompositeOperation to default
 	ctx.globalCompositeOperation = 'source-over';
-    
-
-    ctx.translate(tx, ty);
-    ctx.restore();
 }
 
 /*
