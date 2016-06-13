@@ -470,6 +470,43 @@ function moon(x, y) {
 	ctx.globalCompositeOperation = 'source-over';
 }
 
+function blackHole(x, y, colour) {
+    // Draw the invisible event horizon
+    ctx.globalAlpha = 0;
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + 100, y);
+    ctx.lineTo(x + 100, y + 100);
+    ctx.lineTo(x, y + 100);
+    ctx.closePath();
+    ctx.stroke();
+    
+    // Draw the center of the black hole
+    var gradient = ctx.createRadialGradient(x + 50, y + 50, 5, x + 50, y + 50, 10);
+    gradient.addColorStop(0, "grey");
+    gradient.addColorStop(1/2, "black");
+    gradient.addColorStop(1, "grey");
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x + 50, y + 50, 20, 0, 2*Math.PI, true);
+    ctx.closePath();
+    ctx.fill();
+    
+    // Draw the outer area of the black hole
+    gradient = ctx.createRadialGradient(x + 50, y + 50, 15, x + 50, y + 50, 25);
+    if(colour == 1) { //blue
+        gradient.addColorStop(0, "blue");
+        gradient.addColorStop(1/2, "grey");
+        gradient.addColorStop(1, "blue");
+    }
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(x + 30, y + 30, 5, 1/2*Math.PI, 3/2*Math.PI, false);
+        ctx.closePath();
+        ctx.fill();
+
+}
+
 /*
  * Decrement in-game time by 1.
  *
