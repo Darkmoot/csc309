@@ -55,7 +55,7 @@ button#start_button {
     
 }
 
-canvas#level_one_canvas {
+canvas {
     position: relative;
     top: 120px;
 }   

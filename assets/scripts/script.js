@@ -179,7 +179,7 @@ function drawSpaceObjects(){
         tx = drawnDrawings[i][3];
         ty = drawnDrawings[i][4];
         // Check for collision with canvas walls.
-        if (((x + 50) === 1000) || (x === 0) ) {
+        if (((x + 50) == 1000) || (x == 0) ) {
             tx = ty;
             // Invert direction
             //if!(tx === ty) {
@@ -197,7 +197,7 @@ function drawSpaceObjects(){
             //    }
             //}
         }
-        if (((y + 50) === 640) || (y === 41) ) {
+        if (((y + 50) == 640) || (y == 41) ) {
             ty = tx;
         }
         // Draw.
@@ -407,6 +407,7 @@ function planet(x, y, tx, ty) {
 }
 
 function moon(x, y, tx, ty) {
+    ctx.save();
 	ctx.beginPath();
 	//Outer Crescent
 	ctx.arc(x+25, y+25, 20, 1.2*Math.PI, 0.8*Math.PI);
@@ -429,6 +430,7 @@ function moon(x, y, tx, ty) {
     
 
     ctx.translate(tx, ty);
+    ctx.restore();
 }
 
 /*
