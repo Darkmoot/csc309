@@ -175,6 +175,11 @@ function drawObjects() {
         var randomY = Math.floor((Math.random() * 500) + 50);
 		var randomTX = Math.round((Math.random() * 4) - 2);
 		var randomTY = Math.round((Math.random() * 4) - 2);
+		if (randomTX == 0) {
+			if (randomTY == 0) {
+				randomTX = 1;
+			}
+		}
 		 // Choose the function to draw and store it in a local variable.
 		var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
 		// Create the object and push onto array
