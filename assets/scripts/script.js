@@ -183,8 +183,8 @@ object.prototype.update = function() {
   		this.tx = Math.round((Math.random() * 4) - 2);
 		this.ty = Math.round(Math.random() * 2);
   	}
-  	if (this.y >= 550) {
-  		this.y = 550;
+  	if (this.y >= 590) {
+  		this.y = 590;
   		this.tx = Math.round((Math.random() * 4) - 2);
 		this.ty = -Math.round(Math.random() * 2);
   	}
