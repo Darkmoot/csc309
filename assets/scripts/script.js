@@ -166,7 +166,29 @@ object.prototype.update = function() {
 	this.x = this.x+this.tx;
 	this.y = this.y+this.ty;
   	this.type(this.x, this.y);
-  	//Change direction stuff would go here
+  	//Check that objects don't overshoot canvas boundaries
+  	//If they do, fix it and change direction of travel
+  	if (this.x <= 0) {
+  		this.x = 0;
+  		this.tx = Math.round(Math.random() * 2);
+  		this.ty = Math.round((Math.random() * 4) - 2);
+  	}
+  	if (this.x >= 950) {
+  		this.x = 950;
+  		this.tx = -Math.round(Math.random() * 2);
+		this.ty = Math.round((Math.random() * 4) - 2);
+  	}
+  	if (this.y <= 40) {
+  		this.y = 40;
+  		this.tx = Math.round((Math.random() * 4) - 2);
+		this.ty = Math.round(Math.random() * 2);
+  	}
+  	if (this.y >= 550) {
+  		this.y = 550;
+  		this.tx = Math.round((Math.random() * 4) - 2);
+		this.ty = -Math.round(Math.random() * 2);
+  	}
+  	//Black hole detection and direction change would go here too
 };
 
 function drawObjects() {
@@ -401,7 +423,7 @@ function planet(x, y) {
 	
 	ctx.beginPath();
 	//Ring #1
-	var width = 40;
+	var width = 30;
 	var height = 5;
 	ctx.moveTo(x+mid_offset, y+mid_offset-height);
 	ctx.bezierCurveTo(
@@ -413,7 +435,7 @@ function planet(x, y) {
 			x+mid_offset-width, y+mid_offset-height,
 			x+mid_offset, y+mid_offset-height);
 	//Ring #2
-	width = 42.5;
+	width = 32.5;
 	height = 7.5;
 	ctx.moveTo(x+mid_offset, y+mid_offset-height);
 	ctx.bezierCurveTo(
@@ -424,8 +446,8 @@ function planet(x, y) {
 			x+mid_offset-width, y+mid_offset+height,
 			x+mid_offset-width, y+mid_offset-height,
 			x+mid_offset, y+mid_offset-height);	
-	//Ring #2
-	width = 45;
+	//Ring #3
+	width = 35;
 	height = 10;
 	ctx.moveTo(x+mid_offset, y+mid_offset-height);
 	ctx.bezierCurveTo(
