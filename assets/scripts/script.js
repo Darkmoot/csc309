@@ -335,7 +335,7 @@ function start() {
     // Spawn a new black hole every 3 seconds
     setInterval(spawnBlackHole, 3000);
     // Redraw the black holes at least as frequently as the canvas gets updated
-    setInterval(drawBlackHoles, 33);
+    requestAnimationFrame(drawBlackHoles);
     
 }
 
@@ -534,9 +534,8 @@ function moon(x, y) {
 }
 
 function blackHole(x, y, colour) {
-    console.log("drew a black hole");
     // Draw the invisible event horizon
-    ctx.globalAlpha = 0.25;
+    ctx.globalAlpha = 1;
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.lineTo(x + 100, y);
@@ -582,6 +581,7 @@ function blackHole(x, y, colour) {
     //    ctx.arc(x + 30, y + 30, 10, (Math.PI)/2, 3*(Math.PI)/2, false);
     //    ctx.closePath();
     //    ctx.fill();
+    console.log("drew a black hole");
 
 }
 
