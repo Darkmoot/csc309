@@ -68,12 +68,11 @@ if (typeof(Storage) !== "undefined") {
     
     // Detect mouse click events in the pause region.
     
-    window.canvas.addEventListener('click', pause, false);
+    window.canvas.addEventListener('click', pauseOrDestroy, false);
     window.canvas.addEventListener('mousemove', pauseButtonHover, false);
-    window.pauseCanvas.addEventListener('click', pause, false);
+    window.pauseCanvas.addEventListener('click', pauseOrDestroy, false);
     
 };
-
 
 // Emphasize pause button
 function pauseButtonHover(event) {
@@ -97,7 +96,7 @@ function pauseButtonHover(event) {
     }
 }
 // Pause
-function pause(event) {
+function pauseOrDestroy(event) {
     // Use pageX and pageY to get x and y coords of mouse when clicked. 
     canvasX = event.pageX;
     canvasY = event.pageY;
@@ -146,6 +145,18 @@ function pause(event) {
             window.paused = 0;
             pctx.clearRect(0, 0, 1000, 640);
         }
+    } else {
+        for(i = 0; i < blackHoles.length; i++) {
+            if(blackHoles[i] !== null) {
+                var tempX = blackHoles[i][1];
+                var tempY = blackHoles[i][2];
+                if (((x >= tempX + 25) && (x <= tempX + 75)) &&
+                    ((y >= tempY + 25) && (y <= tempY + 75))) {
+                    blackHoles[i] = null;
+                    //alert("clicked a black hole at x: " + x + ", y: " + y);
+                }
+            }
+        }
     }
 }
 
@@ -187,6 +198,18 @@ object.prototype.update = function() {
 			this.ty = -Math.round(Math.random() * 2);
 		}
 		//Black hole detection and direction change would go here too
+        // Check against black hole coords, increase speed and redirect the space object toward the center
+        // of the black hole.
+        for(i = 0; i < window.blackHoles.length; i++) {
+            if (blackHoles[i] !== null) {
+                if(((this.x >= blackHoles[i][1]) && (this.x <= (blackHoles[i][1] + 100)) ||
+                    ((this.x + 50 >= blackHoles[i][1]) && (this.x + 50 <= (blackHoles[i][1] + 100)))) &&
+                   (((this.y >= blackHoles[i][2]) && (this.y <= (blackHoles[i][2] + 100))) ||
+                   ((this.y + 50 >= blackHoles[i][2]) && (this.y + 50 <= (blackHoles[i][2] + 100))))) {
+                    //
+                }
+            }
+        }
 	}
 };
 
@@ -196,11 +219,13 @@ function generateXY(array) {
     y = Math.floor((Math.random() * 500) + 40);
     
     for(i = 0; i < window.blackHoles.length; i++) {
-        if(((x >= blackHoles[i][1]) && (x <= (blackHoles[i][1] + 100)) ||
-            ((x + 100 >= blackHoles[i][1]) && (x + 100 <= (blackHoles[i][1] + 100)))) &&
-           (((y >= blackHoles[i][2]) && (y <= (blackHoles[i][2] + 100))) ||
-           ((y + 100 >= blackHoles[i][2]) && (y + 100 <= (blackHoles[i][2] + 100))))){
-            generateXY(array);
+        if(blackHoles[i] !== null) {
+            if(((x >= blackHoles[i][1]) && (x <= (blackHoles[i][1] + 100)) ||
+                ((x + 100 >= blackHoles[i][1]) && (x + 100 <= (blackHoles[i][1] + 100)))) &&
+               (((y >= blackHoles[i][2]) && (y <= (blackHoles[i][2] + 100))) ||
+               ((y + 100 >= blackHoles[i][2]) && (y + 100 <= (blackHoles[i][2] + 100))))){
+                generateXY(array);
+            }
         }
     }
     array.push(x);
@@ -226,16 +251,18 @@ function spawnBlackHole() {
         var curr = [blackHoleColour, xy[0], xy[1]];
         blackHole(x, y, blackHoleColour);
         window.blackHoles.push(curr);
-        console.log("pushed a new black hole onto the array");
+        console.log("pushed a new black hole onto the array, with x = " + xy[0] + ", y = " + xy[1]);
     }
 }
 
 function drawBlackHoles() {
     for(i = 0; i < window.blackHoles.length; i++) {
-        x = blackHoles[i][1];
-        y = blackHoles[i][2];
-        colour = blackHoles[i][0];
-        blackHole(x, y, colour);
+        if(blackHoles[i] !== null) {
+            x = blackHoles[i][1];
+            y = blackHoles[i][2];
+            colour = blackHoles[i][0];
+            blackHole(x, y, colour);
+        }
     }
 }
 
