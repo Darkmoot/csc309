@@ -163,32 +163,34 @@ function object(x, y, tx, ty, type) {
 
 //Set an update function for space objects
 object.prototype.update = function() {
-	this.x = this.x+this.tx;
-	this.y = this.y+this.ty;
-  	this.type(this.x, this.y);
-  	//Check that objects don't overshoot canvas boundaries
-  	//If they do, fix it and change direction of travel
-  	if (this.x <= 0) {
-  		this.x = 0;
-  		this.tx = Math.round(Math.random() * 2);
-  		this.ty = Math.round((Math.random() * 4) - 2);
-  	}
-  	if (this.x >= 950) {
-  		this.x = 950;
-  		this.tx = -Math.round(Math.random() * 2);
-		this.ty = Math.round((Math.random() * 4) - 2);
-  	}
-  	if (this.y <= 40) {
-  		this.y = 40;
-  		this.tx = Math.round((Math.random() * 4) - 2);
-		this.ty = Math.round(Math.random() * 2);
-  	}
-  	if (this.y >= 590) {
-  		this.y = 590;
-  		this.tx = Math.round((Math.random() * 4) - 2);
-		this.ty = -Math.round(Math.random() * 2);
-  	}
-  	//Black hole detection and direction change would go here too
+	if (paused == 0) {
+		this.x = this.x+this.tx;
+		this.y = this.y+this.ty;
+		this.type(this.x, this.y);
+		//Check that objects don't overshoot canvas boundaries
+		//If they do, fix it and change direction of travel
+		if (this.x <= 0) {
+			this.x = 0;
+			this.tx = Math.round(Math.random() * 2);
+			this.ty = Math.round((Math.random() * 4) - 2);
+		}
+		if (this.x >= 950) {
+			this.x = 950;
+			this.tx = -Math.round(Math.random() * 2);
+			this.ty = Math.round((Math.random() * 4) - 2);
+		}
+		if (this.y <= 40) {
+			this.y = 40;
+			this.tx = Math.round((Math.random() * 4) - 2);
+			this.ty = Math.round(Math.random() * 2);
+		}
+		if (this.y >= 590) {
+			this.y = 590;
+			this.tx = Math.round((Math.random() * 4) - 2);
+			this.ty = -Math.round(Math.random() * 2);
+		}
+		//Black hole detection and direction change would go here too
+	}
 };
 
 function drawObjects() {
