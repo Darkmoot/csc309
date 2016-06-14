@@ -200,17 +200,22 @@ object.prototype.update = function() {
  *
  */
 function spawnBlackHole() {
+    debugger;
     // Probability of spawning blue: 1/2; purple: 3/10; black: 1/10
     var spawnArray = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3];
     
-    if(window.ingameTime > 0 && window.paused === 1) {    
+    if(window.ingameTime > 0 && window.paused === 0) {    
         // Randomly choose the type of black hole to be drawn
         var blackHoleColour = spawnArray[(Math.floor(Math.random() * 9))];
+        console.log("going to draw a new black hole of type: " + blackHoleColour);
         var x = Math.floor((Math.random() * 850) + 50);
-        var y = Math.floor((Math.random() * 600) + 90);
+        console.log("x-coord: " + x);
+        var y = Math.floor((Math.random() * 500) + 40);
+        console.log("y-coord: " + y);
         var curr = [blackHoleColour, x, y];
         blackHole(x, y, blackHoleColour);
         window.blackHoles.push(curr);
+        console.log("pushed a new black hole onto the array");
     }
 }
 
@@ -327,8 +332,10 @@ function start() {
     // Call the drawTimer function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
     setInterval(drawTimer, 1000);
+    // Spawn a new black hole every 3 seconds
     setInterval(spawnBlackHole, 3000);
-    requestAnimationFrame(drawBlackHoles);
+    // Redraw the black holes at least as frequently as the canvas gets updated
+    setInterval(drawBlackHoles, 33);
     
 }
 
@@ -527,6 +534,7 @@ function moon(x, y) {
 }
 
 function blackHole(x, y, colour) {
+    console.log("drew a black hole");
     // Draw the invisible event horizon
     ctx.globalAlpha = 0.25;
     ctx.beginPath();
@@ -552,9 +560,8 @@ function blackHole(x, y, colour) {
         gradient.addColorStop(1, "black");
         
     } else if(colour == 3) {
-        gradient.addColorStop(0, "#black");
+        gradient.addColorStop(0, "black");
         gradient.addColorStop(3/4, "white");
-        gradient.addColorStop(6/7, "grey");
         gradient.addColorStop(1, "black");
     }
     ctx.fillStyle = gradient;
