@@ -206,15 +206,19 @@ object.prototype.update = function() {
             	bHType = blackHoles[i][0];
             	bHX = blackHoles[i][1];
             	bHY = blackHoles[i][2];
+            	//Check if right side of object is past the left horizon
             	if ((this.x + 50 >= bHX) && (this.x + 50 <= bHX + 50)) {
             		this.tx = bHType;
+            		//Check if bottom of object is past top horizon
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
             			this.ty = bHType;
             		}
+            		//Check if top of object is past bottom horizon
             		if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
             			this.ty = -bHType;
             		}
             	}
+            	//Check if left side of object is past the right horizon
             	if ((this.x >= bHX + 50) && (this.x <= bHX + 100)) {
             		this.tx = -bHType;
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
@@ -224,18 +228,14 @@ object.prototype.update = function() {
             			this.ty = -bHType;
             		}
             	}
+            	//If object has reached middle of black hole, eat it
+            	//eaten = 1 means it no longer gets drawn
             	if ((this.x >= bHX + 20) && (this.x + 50 <= bHX + 80)) {
             		if ((this.y >= bHY + 20) && (this.y + 50 <= bHY + 80)) {
             			this.eaten = 1;
-            			this.x = 0;
-            			this.y = 0;
             		}
             	}
-               /* if
-                
-                
-                
-                (((this.x >= blackHoles[i][1]) && (this.x <= (blackHoles[i][1] + 100)) ||
+               /* if (((this.x >= blackHoles[i][1]) && (this.x <= (blackHoles[i][1] + 100)) ||
                     ((this.x + 50 >= blackHoles[i][1]) && (this.x + 50 <= (blackHoles[i][1] + 100)))) &&
                    (((this.y >= blackHoles[i][2]) && (this.y <= (blackHoles[i][2] + 100))) ||
                    ((this.y + 50 >= blackHoles[i][2]) && (this.y + 50 <= (blackHoles[i][2] + 100))))) {
