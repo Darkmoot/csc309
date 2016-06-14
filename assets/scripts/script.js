@@ -20,12 +20,7 @@ window.onload = function() {
     // Temporarily hard-coding this value since it's not giving me what I expect
     window.canvasTop = 120;
     window.parent = canvas.offsetParent;
-    /* Initialize an array to store 10 arrays (indexed 0-9) of
-     * each of the drawings and their corresponding left and top coords.
-     *
-     * You can draw each object with the information in this array:
-     * drawnDrawings[i][0](drawnDrawings[i][1], drawnDrawings[i][2]);
-     */
+    // Store the 10 space objects
     window.drawnDrawings = [];
     // Store any black holes which are drawn on the canvas.
     window.blackHoles = [];
@@ -195,24 +190,40 @@ object.prototype.update = function() {
 	}
 };
 
+
+function generateXY(array) {
+    x = Math.floor((Math.random() * 900));
+    y = Math.floor((Math.random() * 500) + 40);
+    
+    for(i = 0; i < window.blackHoles.length; i++) {
+        if(((x >= blackHoles[i][1]) && (x <= (blackHoles[i][1] + 100)) ||
+            ((x + 100 >= blackHoles[i][1]) && (x + 100 <= (blackHoles[i][1] + 100)))) &&
+           (((y >= blackHoles[i][2]) && (y <= (blackHoles[i][2] + 100))) ||
+           ((y + 100 >= blackHoles[i][2]) && (y + 100 <= (blackHoles[i][2] + 100))))){
+            generateXY(array);
+        }
+    }
+    array.push(x);
+    array.push(y);
+}
+
 /*
  * 
  *
  */
 function spawnBlackHole() {
     debugger;
-    // Probability of spawning blue: 1/2; purple: 3/10; black: 1/10
-    var spawnArray = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3];
+    // Probability of spawning blue: 1/2; purple: 1/3; black: 1/4
+    var spawnArray = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3];
     
     if(window.ingameTime > 0 && window.paused === 0) {    
         // Randomly choose the type of black hole to be drawn
-        var blackHoleColour = spawnArray[(Math.floor(Math.random() * 9))];
+        var blackHoleColour = spawnArray[(Math.floor(Math.random() * 12))];
         console.log("going to draw a new black hole of type: " + blackHoleColour);
-        var x = Math.floor((Math.random() * 850) + 50);
-        console.log("x-coord: " + x);
-        var y = Math.floor((Math.random() * 500) + 40);
-        console.log("y-coord: " + y);
-        var curr = [blackHoleColour, x, y];
+        var xy = [];
+        generateXY(xy);
+        
+        var curr = [blackHoleColour, xy[0], xy[1]];
         blackHole(x, y, blackHoleColour);
         window.blackHoles.push(curr);
         console.log("pushed a new black hole onto the array");
@@ -255,6 +266,7 @@ function drawAndUpdate() {
 		var myObject = window.drawnDrawings[i];
 		myObject.update();
 	}
+    drawBlackHoles();
 	requestAnimationFrame(drawAndUpdate);
 }
 /*
@@ -335,7 +347,7 @@ function start() {
     // Spawn a new black hole every 3 seconds
     setInterval(spawnBlackHole, 3000);
     // Redraw the black holes at least as frequently as the canvas gets updated
-    requestAnimationFrame(drawBlackHoles);
+    
     
 }
 
@@ -535,7 +547,7 @@ function moon(x, y) {
 
 function blackHole(x, y, colour) {
     // Draw the invisible event horizon
-    ctx.globalAlpha = 1;
+    ctx.globalAlpha = 0.25;
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.lineTo(x + 100, y);
