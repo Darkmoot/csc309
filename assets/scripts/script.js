@@ -27,6 +27,8 @@ window.onload = function() {
      * drawnDrawings[i][0](drawnDrawings[i][1], drawnDrawings[i][2]);
      */
     window.drawnDrawings = [];
+    // Store any black holes which are drawn on the canvas.
+    window.blackHoles = [];
     
     //Pause Button coords
     window.pauseXStart = 665;
@@ -193,14 +195,42 @@ object.prototype.update = function() {
 	}
 };
 
+/*
+ * 
+ *
+ */
+function spawnBlackHole() {
+    // Probability of spawning blue: 1/2; purple: 3/10; black: 1/10
+    var spawnArray = [1, 1, 1, 1, 1, 1, 2, 2, 2, 3];
+    
+    if(window.ingameTime > 0 && window.paused === 1) {    
+        // Randomly choose the type of black hole to be drawn
+        var blackHoleColour = spawnArray[(Math.floor(Math.random() * 9))];
+        var x = Math.floor((Math.random() * 850) + 50);
+        var y = Math.floor((Math.random() * 600) + 90);
+        var curr = [blackHoleColour, x, y];
+        blackHole(x, y, blackHoleColour);
+        window.blackHoles.push(curr);
+    }
+}
+
+function drawBlackHoles() {
+    for(i = 0; i < window.blackHoles.length; i++) {
+        x = blackHoles[i][1];
+        y = blackHoles[i][2];
+        colour = blackHoles[i][0];
+        blackHole(x, y, colour);
+    }
+}
+
 function drawObjects() {
 	for (var i = 0; i < 10; i++) {
         var randomX = Math.floor((Math.random() * 900) + 50);
         var randomY = Math.floor((Math.random() * 500) + 50);
 		var randomTX = Math.round((Math.random() * 4) - 2);
 		var randomTY = Math.round((Math.random() * 4) - 2);
-		if (randomTX == 0) {
-			if (randomTY == 0) {
+		if (randomTX === 0) {
+			if (randomTY === 0) {
 				randomTX = 1;
 			}
 		}
@@ -288,15 +318,17 @@ function start() {
     document.getElementById("levelOnePage").style.display = "block";
     gameLevel = 1;
     ingameTime = 60;
-
+    
     drawCanvas();
     //initSpaceObjects();
     drawObjects();
-    setInterval(drawSpaceObjects, 33);
+    //setInterval(drawSpaceObjects, 33);
     //requestAnimationFrame(drawSpaceObjects);
     // Call the drawTimer function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
     setInterval(drawTimer, 1000);
+    setInterval(spawnBlackHole, 3000);
+    requestAnimationFrame(drawBlackHoles);
     
 }
 
@@ -496,38 +528,53 @@ function moon(x, y) {
 
 function blackHole(x, y, colour) {
     // Draw the invisible event horizon
-    ctx.globalAlpha = 0;
+    ctx.globalAlpha = 0.25;
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.lineTo(x + 100, y);
     ctx.lineTo(x + 100, y + 100);
     ctx.lineTo(x, y + 100);
     ctx.closePath();
-    ctx.stroke();
+    ctx.fill();
     
+    ctx.globalAlpha = 1;
     // Draw the center of the black hole
-    var gradient = ctx.createRadialGradient(x + 50, y + 50, 5, x + 50, y + 50, 10);
-    gradient.addColorStop(0, "grey");
-    gradient.addColorStop(1/2, "black");
-    gradient.addColorStop(1, "grey");
+    var gradient = ctx.createRadialGradient(x + 50, y + 50, 25, x + 50, y + 50, 15);
+    if(colour == 1) {
+        gradient.addColorStop(0, "#1778ff");
+        gradient.addColorStop(3/4, "white");
+        gradient.addColorStop(6/7, "#1778ff");
+        gradient.addColorStop(1, "black");
+    } else if(colour == 2) {
+        gradient.addColorStop(0, "#b71089");
+        gradient.addColorStop(3/4, "white");
+        gradient.addColorStop(6/7, "#b71089");
+        gradient.addColorStop(1, "black");
+        
+    } else if(colour == 3) {
+        gradient.addColorStop(0, "#black");
+        gradient.addColorStop(3/4, "white");
+        gradient.addColorStop(6/7, "grey");
+        gradient.addColorStop(1, "black");
+    }
     ctx.fillStyle = gradient;
     ctx.beginPath();
-    ctx.arc(x + 50, y + 50, 20, 0, 2*Math.PI, true);
+    ctx.arc(x + 50, y + 50, 25, 0, 2*Math.PI, true);
     ctx.closePath();
     ctx.fill();
     
     // Draw the outer area of the black hole
-    gradient = ctx.createRadialGradient(x + 50, y + 50, 15, x + 50, y + 50, 25);
-    if(colour == 1) { //blue
-        gradient.addColorStop(0, "blue");
-        gradient.addColorStop(1/2, "grey");
-        gradient.addColorStop(1, "blue");
-    }
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(x + 30, y + 30, 5, 1/2*Math.PI, 3/2*Math.PI, false);
-        ctx.closePath();
-        ctx.fill();
+    //outerGradient = ctx.createRadialGradient(x + 50, y + 50, 50, x + 50, y + 50, 35);
+    //if(colour == 1) { //blue
+    //    gradient.addColorStop(0, "grey");
+    //    //gradient.addColorStop(1/2, "grey");
+    //    gradient.addColorStop(1, "blue");
+    //}
+    //    ctx.fillStyle = outerGradient;
+    //    ctx.beginPath();
+    //    ctx.arc(x + 30, y + 30, 10, (Math.PI)/2, 3*(Math.PI)/2, false);
+    //    ctx.closePath();
+    //    ctx.fill();
 
 }
 
