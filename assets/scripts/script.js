@@ -161,17 +161,18 @@ function pauseOrDestroy(event) {
 }
 
 //Create a class for space objects
-function object(x, y, tx, ty, type) {
+function object(x, y, tx, ty, type, eaten) {
 	this.x = x;
 	this.y = y;
 	this.tx = tx;
 	this.ty = ty;
 	this.type = type;
+	this.eaten = eaten;
 }
 
 //Set an update function for space objects
 object.prototype.update = function() {
-	if (paused == 0) {
+	if ((paused == 0) && (this.eaten == 0)) {
 		this.x = this.x+this.tx;
 		this.y = this.y+this.ty;
 		this.type(this.x, this.y);
@@ -202,12 +203,44 @@ object.prototype.update = function() {
         // of the black hole.
         for(i = 0; i < window.blackHoles.length; i++) {
             if (blackHoles[i] !== null) {
-                if(((this.x >= blackHoles[i][1]) && (this.x <= (blackHoles[i][1] + 100)) ||
+            	bHType = blackHoles[i][0];
+            	bHX = blackHoles[i][1];
+            	bHY = blackHoles[i][2];
+            	if ((this.x + 50 >= bHX) && (this.x + 50 <= bHX + 50)) {
+            		this.tx = bHType;
+            		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
+            			this.ty = bHType;
+            		}
+            		if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
+            			this.ty = -bHType;
+            		}
+            	}
+            	if ((this.x >= bHX + 50) && (this.x <= bHX + 100)) {
+            		this.tx = -bHType;
+            		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
+            			this.ty = bHType;
+            		}
+            		if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
+            			this.ty = -bHType;
+            		}
+            	}
+            	if ((this.x >= bHX + 20) && (this.x + 50 <= bHX + 80)) {
+            		if ((this.y >= bHY + 20) && (this.y + 50 <= bHY + 80)) {
+            			this.eaten = 1;
+            			this.x = 0;
+            			this.y = 0;
+            		}
+            	}
+               /* if
+                
+                
+                
+                (((this.x >= blackHoles[i][1]) && (this.x <= (blackHoles[i][1] + 100)) ||
                     ((this.x + 50 >= blackHoles[i][1]) && (this.x + 50 <= (blackHoles[i][1] + 100)))) &&
                    (((this.y >= blackHoles[i][2]) && (this.y <= (blackHoles[i][2] + 100))) ||
                    ((this.y + 50 >= blackHoles[i][2]) && (this.y + 50 <= (blackHoles[i][2] + 100))))) {
                     //
-                }
+                }*/
             }
         }
 	}
@@ -280,7 +313,7 @@ function drawObjects() {
 		 // Choose the function to draw and store it in a local variable.
 		var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
 		// Create the object and push onto array
-		var obj = new object(randomX, randomY, randomTX, randomTY, currDrawing);
+		var obj = new object(randomX, randomY, randomTX, randomTY, currDrawing, 0);
 		window.drawnDrawings.push(obj);
 	}
 	drawAndUpdate();
@@ -296,61 +329,7 @@ function drawAndUpdate() {
     drawBlackHoles();
 	requestAnimationFrame(drawAndUpdate);
 }
-/*
-function initSpaceObjects() {
-    for(i = 0; i < 10; i++) {
-        var x = Math.floor((Math.random() * 900) + 50);
-        var y = Math.floor((Math.random() * 500) + 50);
-        var tx = Math.random();
-        var ty = Math.random();
-        // Choose the function to draw and store it in a local variable.
-        var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
-        // Store the name of the function and its left and top values.
-        window.drawnDrawings[i] = [currDrawing, x, y, tx, ty];
-    }
-}
 
-/*
- * Draw either a planet, spacecraft, or moon 10 times
- * on a random position on the canvas.
- * 
- */    
-/*
-function drawSpaceObjects(){
-    ctx.clearRect(0, 40, 1000, 600);
-    for(i = 0; i < 10; i++) {
-        drawing = drawnDrawings[i][0];
-        x = drawnDrawings[i][1];
-        y = drawnDrawings[i][2];
-        tx = drawnDrawings[i][3];
-        ty = drawnDrawings[i][4];
-        // Check for collision with canvas walls.
-        if (((x + 50) == 1000) || (x == 0) ) {
-            tx = ty;
-            // Invert direction
-            //if!(tx === ty) {
-            //    if(tx === 0) {
-            //        tx = 1;
-            //    }
-            //    if(tx === 1) {
-            //        tx = 0;
-            //    }
-            //    if(ty === 0) {
-            //        ty = 1;
-            //    }
-            //    if(ty === 1) {
-            //        ty = 0;
-            //    }
-            //}
-        }
-        if (((y + 50) == 640) || (y == 41) ) {
-            ty = tx;
-        }
-        // Draw.
-        drawing(x, y, tx, ty);
-    }
-}
-*/
 
 /*
  * Switch visibility from the start page to the game page and
