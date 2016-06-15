@@ -8,14 +8,17 @@ body {
     font-family: 'Montserrat', sans-serif;
 }
 
-#game_title {
+#gameTitle {
     margin-top: 200px;
 }
-#high_score {
-    margin-top: 100px;
+#level {
+    margin-top: 50px;
+}
+#highScore {
+    margin-top: 50px;
 }
 
-#game_title, #high_score  {
+#gameTitle, #highScore, #level  {
     display: block;
     font-size: 32px;
     padding: 16px;
@@ -25,7 +28,8 @@ section {
     align-content: center;
 }
 
-#high_score_value {
+#highScoreValue {
+    list-style-type: none;
     display: block;
     width: 150px;
     padding-left: 20px;
@@ -33,16 +37,16 @@ section {
     padding-top: 8px;
     padding-bottom: 8px;
     position: relative;
-    left: 800px;
+    left: 850px;
     color: #000000;
     background-color: #FFFFFF;
     font-size: 48px;
 }
 
-button#start_button {
+button#startButton, #nextButton {
     display: block;
     position: relative;
-    left: 850px;
+    left: 860px;
     background-color: #FFFFFF;
     color: #FF6600;
     text-transform: uppercase;
