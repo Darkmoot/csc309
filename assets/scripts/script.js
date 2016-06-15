@@ -14,7 +14,7 @@ window.onload = function() {
     window.gameLevel = 1;
     window.gameScore = 200;
     // Store the functions to be drawn in an array.
-    window.drawings = [moon, planet, spaceship];
+    window.drawings = [moon, planet, spaceship, deadStickPerson];
     // Store the offset positions of x and y.
     window.canvasLeft = canvas.offsetLeft;
     // Hard-coding this value since it's not giving me what I expect
@@ -412,7 +412,7 @@ function drawObjects() {
 			}
 		}
 		 // Choose the function to draw and store it in a local variable.
-		var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
+		var currDrawing = (window.drawings[Math.floor((Math.random() * 4))]);
 		// Create the object and push onto array
 		var obj = new object(randomX, randomY, randomTX, randomTY, currDrawing, 0);
 		window.drawnDrawings.push(obj);
