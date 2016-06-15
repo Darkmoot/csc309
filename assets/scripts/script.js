@@ -3,21 +3,21 @@ window.onload = function() {
     
     /* Global variables */
     
-    // Initialize the canvas and context.
+    // Initialize the game canvas and context.
     window.canvas = document.getElementById("levelOneCanvas");
     window.ctx = canvas.getContext("2d");
     //Pause Canvas
     window.pauseCanvas = document.getElementById("pauseCanvas");
     window.pctx = pauseCanvas.getContext("2d");
-    // Initialize the timer to 60, game level to 0, score to 200.
+    // Initialize the timer to 60, game level to 1, score to 200.
     window.ingameTime = 60;
-    window.gameLevel = 0;
+    window.gameLevel = 1;
     window.gameScore = 200;
     // Store the functions to be drawn in an array.
     window.drawings = [moon, planet, spaceship];
-    // Store the offset positions of x and y. Not sure how to use this yet.
+    // Store the offset positions of x and y.
     window.canvasLeft = canvas.offsetLeft;
-    // Temporarily hard-coding this value since it's not giving me what I expect
+    // Hard-coding this value since it's not giving me what I expect
     window.canvasTop = 120;
     window.parent = canvas.offsetParent;
     // Store the 10 space objects
@@ -34,25 +34,17 @@ window.onload = function() {
     window.pausedDataURL = null;
     window.pausedImage = new Image();
     
-// Store and retrieve high score to/from local storage.
-if (typeof(Storage) !== "undefined") {
-    // Store
-    // create localStorage name/value pair, name="score", value="00:00"
-    // note: name-value pairs always stored as strings
-    localStorage.setItem("score", "00:00");
-    // Retrieve value of "score" and insert it into element with id="high_score_value"
-    document.getElementById("high_score_value").innerHTML = localStorage.getItem("score");
-} else {
-    // no web storage support
-}
+    //
+    updateHighScores();
 
     // By default, display the start page until the start button is clicked.
-    document.getElementById("start_page").style.visibility = "visible";
+    document.getElementById("startPage").style.visibility = "visible";
     
     // Hide the level one and level two pages.
     document.getElementById("levelOnePage").style.display = "none";
-    document.getElementById("level_two_page").style.display = "none";
+    document.getElementById("levelTwoPage").style.display = "none";
     document.getElementById("pausePage").style.display = "none";
+    document.getElementById("level").style.display = "none";
     
     // Add event listener for click events.
     //ctx.addEventListener("click", pause, false);
@@ -66,13 +58,38 @@ if (typeof(Storage) !== "undefined") {
     //		}
     //    });
     
-    // Detect mouse click events in the pause region.
-    
+    // Detect mouse click events for pausing the game or destroying black holes.
     window.canvas.addEventListener('click', pauseOrDestroy, false);
+    // Change the appearance of pause text on hover, so it looks like a button.
     window.canvas.addEventListener('mousemove', pauseButtonHover, false);
+    // Detect mouse click events on the second canvas so the game can be unpaused.
     window.pauseCanvas.addEventListener('click', pauseOrDestroy, false);
     
 };
+
+/*
+ * Store and retrieve high score to/from local storage.
+ * 
+ */
+function updateHighScores() {
+    if (typeof(Storage) !== "undefined") {
+        // Store
+        // create localStorage name/value pair, name="score", value="00:00"
+        // note: name-value pairs always stored as strings
+        if((localStorage.getItem("scoreBest") === null)) {
+            localStorage.setItem("scoreBest", "0");
+            localStorage.setItem("scoreSecond", "0");
+            localStorage.setItem("scoreThird", "0");
+        }
+        // Retrieve value of "score" and insert it into element with id="high_score_value"
+        
+        document.getElementById("highScoreValue").innerHTML = '<li>' + localStorage.getItem("scoreBest") + '</li>' +
+                                                            '<li>' + localStorage.getItem("scoreSecond") + '</li>' +
+                                                            '<li>' + localStorage.getItem("scoreThird") + '</li>';
+    } else {
+        // no web storage support
+    }
+}
 
 // Emphasize pause button
 function pauseButtonHover(event) {
@@ -152,12 +169,40 @@ function pauseOrDestroy(event) {
                 var tempY = blackHoles[i][2];
                 if (((x >= tempX + 25) && (x <= tempX + 75)) &&
                     ((y >= tempY + 25) && (y <= tempY + 75))) {
+                    calculateScore(blackHoles[i][0]);
                     blackHoles[i] = null;
                     //alert("clicked a black hole at x: " + x + ", y: " + y);
                 }
             }
         }
     }
+}
+
+/*
+ *
+ */
+function calculateScore(blackHoleType) {
+    if( blackHoleType === 1) {
+        window.gameScore += 5;
+    } else if (blackHoleType === 2) {
+        window.gameScore += 10;
+    } else if (blackHoleType === 3) {
+        window.gameScore += 20;
+    }
+    // Update high scores whenever the current game score is updated
+    if(parseInt(localStorage.getItem("scoreBest")) < gameScore) {
+        localStorage.setItem("scoreBest", gameScore.toString());
+    } else if(parseInt(localStorage.getItem("scoreSecond")) < gameScore) {
+        (localStorage.setItem("scoreSecond", gameScore.toString()));
+    } else if(parseInt(localStorage.getItem("scoreThird")) < gameScore) {
+        localStorage.setItem("scoreThird", gameScore.toString());
+    }
+    ctx.clearRect(200, 0, 200, 40);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "1em Montserrat";
+    ctx.textAlign = "center";
+    ctx.fillText("Score: " + gameScore, 300, 30);
+    
 }
 
 //Create a class for space objects
@@ -247,7 +292,7 @@ object.prototype.update = function() {
             }
         }
 	}
-};
+}
 
 
 function generateXY(array) {
@@ -274,7 +319,7 @@ function generateXY(array) {
  */
 function spawnBlackHole() {
     debugger;
-    // Probability of spawning blue: 1/2; purple: 1/3; black: 1/4
+    // Probability of spawning blue: 1/2; purple: 1/3; black: 1/6
     var spawnArray = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3];
     
     if(window.ingameTime > 0 && window.paused === 0) {    
@@ -340,11 +385,9 @@ function drawAndUpdate() {
  * 
  */
 function start() {
-    document.getElementById("start_page").style.display = "none";
+    document.getElementById("startPage").style.display = "none";
     document.getElementById("levelOnePage").style.display = "block";
-    gameLevel = 1;
     ingameTime = 60;
-    
     drawCanvas();
     //initSpaceObjects();
     drawObjects();
@@ -353,11 +396,12 @@ function start() {
     // Call the drawTimer function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
     setInterval(drawTimer, 1000);
-    // Spawn a new black hole every 3 seconds
-    setInterval(spawnBlackHole, 3000);
-    // Redraw the black holes at least as frequently as the canvas gets updated
-    
-    
+    if(gameLevel === 1) {
+        // Spawn a new black hole every 3 seconds
+        setInterval(spawnBlackHole, 3000);
+    } else if(gameLevel === 2) {
+        setInterval(spawnBlackHole, 1500);
+    }
 }
 
 /*
@@ -367,6 +411,14 @@ function start() {
 function nextLevel() {
     // drawLevelTwo();
     gameLevel = 2;
+    updateHighScores();
+    document.getElementById("startPage").style.display = "block";
+    document.getElementById("levelOnePage").style.display = "none";
+    document.getElementById("level").style.display = "block";
+    document.getElementById("startButton").innerHTML = "Next";
+    // Change start page to look like transitional page
+    document.getElementById("level").innerHTML = "Level " + gameLevel;
+    //document.getElementById( 'startPage' ).append ('<button type="button" id="nextButton" onclick=start();> Next </button>');
 }
 
 /*
@@ -556,7 +608,7 @@ function moon(x, y) {
 
 function blackHole(x, y, colour) {
     // Draw the invisible event horizon
-    ctx.globalAlpha = 0.25;
+    ctx.globalAlpha = 0;
     ctx.beginPath();
     ctx.moveTo(x, y);
     ctx.lineTo(x + 100, y);
@@ -612,7 +664,7 @@ function blackHole(x, y, colour) {
  */
 function timer() {
     if(window.ingameTime > 0)  {
-    window.ingameTime = window.ingameTime - 1;
+        window.ingameTime = window.ingameTime - 1;
     } else {
         // When the transiton level screen is implemented, call that instead of
         // nextLevel() when the timer hits 0.
