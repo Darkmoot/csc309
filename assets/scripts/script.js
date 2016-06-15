@@ -169,7 +169,7 @@ function pauseOrDestroy(event) {
                 var tempY = blackHoles[i][2];
                 if (((x >= tempX + 25) && (x <= tempX + 75)) &&
                     ((y >= tempY + 25) && (y <= tempY + 75))) {
-                    calculateScore(blackHoles[i][0]);
+                    incrementScore(blackHoles[i][0]);
                     blackHoles[i] = null;
                     //alert("clicked a black hole at x: " + x + ", y: " + y);
                 }
@@ -180,8 +180,25 @@ function pauseOrDestroy(event) {
 
 /*
  *
+ *
  */
-function calculateScore(blackHoleType) {
+function updateScore() {
+    ctx.clearRect(200, 0, 200, 40);
+    ctx.fillStyle = "#FFFFFF";
+    ctx.font = "1em Montserrat";
+    ctx.textAlign = "center";
+    ctx.fillText("Score: " + gameScore, 300, 30);
+}
+
+function decrementScore () {
+    gameScore -= 50;
+    updateScore();
+}
+
+/*
+ *
+ */
+function incrementScore(blackHoleType) {
     if( blackHoleType === 1) {
         window.gameScore += 5;
     } else if (blackHoleType === 2) {
@@ -197,12 +214,7 @@ function calculateScore(blackHoleType) {
     } else if(parseInt(localStorage.getItem("scoreThird")) < gameScore) {
         localStorage.setItem("scoreThird", gameScore.toString());
     }
-    ctx.clearRect(200, 0, 200, 40);
-    ctx.fillStyle = "#FFFFFF";
-    ctx.font = "1em Montserrat";
-    ctx.textAlign = "center";
-    ctx.fillText("Score: " + gameScore, 300, 30);
-    
+    updateScore();
 }
 
 //Create a class for space objects
@@ -388,6 +400,8 @@ function start() {
     document.getElementById("startPage").style.display = "none";
     document.getElementById("levelOnePage").style.display = "block";
     ingameTime = 60;
+    blackHoles = [];
+    drawnDrawings = [];
     drawCanvas();
     //initSpaceObjects();
     drawObjects();
@@ -666,8 +680,10 @@ function timer() {
     if(window.ingameTime > 0)  {
         window.ingameTime = window.ingameTime - 1;
     } else {
-        // When the transiton level screen is implemented, call that instead of
-        // nextLevel() when the timer hits 0.
-        nextLevel();
+        if(gameLevel == 1) {
+            nextLevel();
+        } else if(gameLevel == 2) {
+            finish();
+        }
     }
 }
