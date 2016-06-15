@@ -267,19 +267,31 @@ object.prototype.update = function() {
             	bHX = blackHoles[i][1];
             	bHY = blackHoles[i][2];
                 bCenter = [bHX + 50, bHY + 50];
+                if ((this.x + 25 >= bHX) && (this.x + 25 <= bHX + 100)) {
+                	 if ((this.y + 25 >= bHY) && (this.y + 25 <= bHY + 100)) {
+                		 diffX = (bHX + 50) - (this.x + 25);
+                		 diffY = (bHY + 50) - (this.y + 25);
+                		 if (diffX >= 0) {
+                			 this.tx = Math.ceil(diffX / 40) * bHType;
+                		 } else {
+                			 this.tx = Math.floor(diffX / 40) * bHType;
+                		 }
+                		 if (diffY >= 0) {
+                			 this.ty = Math.ceil(diffY / 40) * bHType;
+                		 } else {
+                			 this.ty = Math.floor(diffY / 40) * bHType;
+                		 }
+                	 }
+                }
             	//Check if right side of object is past the left horizon
-            	if ((this.x + 50 >= bHX) && (this.x + 50 <= bHX + 50)) {
+                else if ((this.x + 50 >= bHX) && (this.x + 50 <= bHX + 50)) {
             		//Check if bottom of object is past top horizon
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
-            			//this.tx = Math.min(bHType, Math.round((bHX+50-this.x+25)/5));
-            			//this.ty = Math.min(bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = bHType;
             			this.ty = bHType;
             		}
             		//Check if top of object is past bottom horizon
             		else if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
-            			//this.tx = Math.min(bHType, Math.round((bHX+50-this.x+25)/5));
-            			//this.ty = Math.min(-bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = bHType;
             			this.ty = -bHType;
             		}
@@ -288,25 +300,21 @@ object.prototype.update = function() {
             	else if ((this.x >= bHX + 50) && (this.x <= bHX + 100)) {
             		//Bottom-object past top
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
-            			//this.tx = Math.min(-bHType, Math.round((bHX+50-this.x+25)/5));
-            			//this.ty = Math.min(bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = -bHType;
             			this.ty = bHType;
             		}
             		//Top-object past bottom
             		else if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
-            			//this.tx = Math.min(-bHType, Math.round((bHX+50-this.x+25)/5));
-            			//this.ty = Math.min(-bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = -bHType;
             			this.ty = -bHType;
             		}
             	}
             	//If object has reached middle of black hole, eat it
             	//eaten = 1 means it no longer gets drawn
-            	if ((this.x + 25 >= bHX + 25) && (this.x + 25 <= bHX + 75)) {
-            		if ((this.y + 25 >= bHY + 25) && (this.y + 25 <= bHY + 75)) {
+            	if ((this.x + 25 >= bHX + 40) && (this.x + 25 <= bHX + 60)) {
+            		if ((this.y + 25 >= bHY + 40) && (this.y + 25 <= bHY + 60)) {
             			this.eaten = 1;
-            			//We'll want to update score and black hole counter for eaten objects here
+            			//Update score and black hole counter for eaten objects here
                         decrementScore();
                         console.log("black hole ate an object. this black hole's fullness is now " + blackHoles[i][3]);
                         incrementFullness(i, bHType);
@@ -436,10 +444,8 @@ function start() {
     blackHoles = [];
     drawnDrawings = [];
     drawCanvas();
-    //initSpaceObjects();
     drawObjects();
     //setInterval(drawSpaceObjects, 33);
-    //requestAnimationFrame(drawSpaceObjects);
     // Call the drawTimer function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
     setInterval(drawTimer, 1000);
