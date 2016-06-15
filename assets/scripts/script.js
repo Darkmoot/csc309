@@ -13,8 +13,12 @@ window.onload = function() {
     window.ingameTime = 60;
     window.gameLevel = 1;
     window.gameScore = 200;
+    //
+    window.intervalID = null;
+    window.spawnIntervalID = null;
+    window.animationFrameID = null;
     // Store the functions to be drawn in an array.
-    window.drawings = [moon, planet, spaceship];
+    window.drawings = [moon, planet, spaceship, drawPurpleShip];
     // Store the offset positions of x and y.
     window.canvasLeft = canvas.offsetLeft;
     // Hard-coding this value since it's not giving me what I expect
@@ -24,7 +28,8 @@ window.onload = function() {
     window.drawnDrawings = [];
     // Store any black holes which are drawn on the canvas.
     window.blackHoles = [];
-    
+    // Store number of objects left uneaten
+    window.objectsLeft = 10;
     //Pause Button coords
     window.pauseXStart = 665;
     window.pauseXEdge = 735;
@@ -44,7 +49,6 @@ window.onload = function() {
     document.getElementById("levelOnePage").style.display = "none";
     document.getElementById("levelTwoPage").style.display = "none";
     document.getElementById("pausePage").style.display = "none";
-    document.getElementById("level").style.display = "none";
     
     // Add event listener for click events.
     //ctx.addEventListener("click", pause, false);
@@ -232,7 +236,7 @@ function object(x, y, tx, ty, type, eaten) {
 
 //Set an update function for space objects
 object.prototype.update = function() {
-	if ((paused == 0) && (this.eaten == 0)) {
+	if ((paused === 0) && (this.eaten === 0) && (ingameTime >= 0)) {
 		this.x = this.x+this.tx;
 		this.y = this.y+this.ty;
 		this.type(this.x, this.y);
@@ -306,13 +310,17 @@ object.prototype.update = function() {
             	if ((this.x + 25 >= bHX + 25) && (this.x + 25 <= bHX + 75)) {
             		if ((this.y + 25 >= bHY + 25) && (this.y + 25 <= bHY + 75)) {
             			this.eaten = 1;
+                        window.objectsLeft -= 1;
             			//We'll want to update score and black hole counter for eaten objects here
                         decrementScore();
-                        console.log("black hole ate an object. this black hole's fullness is now " + blackHoles[i][3]);
                         incrementFullness(i, bHType);
                         console.log("space object was eaten at x = " + this.x + "y = " +
                                     this.y + ", (" + (this.x - bCenter[0]) + ", " + (this.y - bCenter[1]) +
                                     ") from the center of the black hole.");
+                        if(window.objectsLeft === 0) {
+                            nextLevel();
+                            
+                        }
             		}
             	}
             }
@@ -327,16 +335,20 @@ object.prototype.update = function() {
 function incrementFullness(i, type) {
     blackHoles[i][3] += 1;
     var fullness = blackHoles[i][3];
+    console.log("black hole ate an object. this black hole's fullness is now " + blackHoles[i][3]);
     if(type == 1) {
         if(fullness == 3) {
             blackHoles[i] = null;
+            console.log("blue black hole disappeared!");
         }
     } else if(type == 2) {
         if(fullness == 2) {
             blackHoles[i] = null;
+            console.log("purple black hole disappeared!");
         }
     } else if(type == 3) {
         blackHoles[i] = null;
+        console.log("black black hole disappeared!");
     }
 }
 
@@ -404,7 +416,7 @@ function drawObjects() {
 			}
 		}
 		 // Choose the function to draw and store it in a local variable.
-		var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
+		var currDrawing = (window.drawings[Math.floor((Math.random() * 4))]);
 		// Create the object and push onto array
 		var obj = new object(randomX, randomY, randomTX, randomTY, currDrawing, 0);
 		window.drawnDrawings.push(obj);
@@ -420,7 +432,7 @@ function drawAndUpdate() {
 		myObject.update();
 	}
     drawBlackHoles();
-	requestAnimationFrame(drawAndUpdate);
+	animationFrameID = requestAnimationFrame(drawAndUpdate);
 }
 
 
@@ -435,6 +447,7 @@ function start() {
     ingameTime = 60;
     blackHoles = [];
     drawnDrawings = [];
+    objectsLeft = 10;
     drawCanvas();
     //initSpaceObjects();
     drawObjects();
@@ -442,13 +455,31 @@ function start() {
     //requestAnimationFrame(drawSpaceObjects);
     // Call the drawTimer function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
-    setInterval(drawTimer, 1000);
+    intervalID = setInterval(drawTimer, 1000);
     if(gameLevel === 1) {
         // Spawn a new black hole every 3 seconds
-        setInterval(spawnBlackHole, 3000);
+        spawnIntervalID = setInterval(spawnBlackHole, 3000);
     } else if(gameLevel === 2) {
-        setInterval(spawnBlackHole, 1500);
+        spawnIntervalID = setInterval(spawnBlackHole, 1500);
     }
+}
+
+/*
+ *
+ *
+ */
+function finish() {
+    gameScore = 200;
+    gameLevel = 1;
+    gameTime = -1;
+    document.getElementById("startPage").style.display = "block";
+    document.getElementById("levelOnePage").style.display = "none";
+    document.getElementById("gameTitle").innerHTML = "Black Hole Game";
+    document.getElementById("highScore").innerHTML = "High Scores" +
+    '<ul id="highScoreValue">0</ul>';
+    updateHighScores();
+    document.getElementById("button").innerHTML =
+    '<button type="button" id="startButton" onclick=start();> Start </button>';
 }
 
 /*
@@ -456,17 +487,27 @@ function start() {
  *
  */
 function nextLevel() {
-    // drawLevelTwo();
-    gameLevel = 2;
-    updateHighScores();
+    cancelAnimationFrame(animationFrameID);
+    clearInterval(intervalID);
+    clearInterval(spawnIntervalID);
     document.getElementById("startPage").style.display = "block";
     document.getElementById("levelOnePage").style.display = "none";
-    document.getElementById("level").style.display = "block";
-    document.getElementById("startButton").innerHTML = "Next";
-    // Change start page to look like transitional page
-    document.getElementById("level").innerHTML = "Level " + gameLevel;
-    //document.getElementById( 'startPage' ).append ('<button type="button" id="nextButton" onclick=start();> Next </button>');
+    if(gameLevel == 1) {
+        document.getElementById("startButton").innerHTML = "Next";
+        // Change start page to look like transitional page
+        document.getElementById("gameTitle").innerHTML = "Level 1";
+        document.getElementById("highScore").innerHTML = "Score" +
+            "<ul id='highScoreValue'><li>" + gameScore + "</li></ul></section>";    
+        gameLevel = 2;
+    } else if(gameLevel == 2) {
+        document.getElementById("gameTitle").innerHTML = "Level 2";
+        document.getElementById("highScore").innerHTML = "Score" +
+            "<ul id='highScoreValue'><li>" + gameScore + "</li></ul>";
+        document.getElementById("button").innerHTML =
+        '<button type="button" id="startButton" onclick=finish();> Finish </button>';
+    }
 }
+
 
 /*
  * Draw the level, score, pause button elements.
@@ -705,6 +746,39 @@ function blackHole(x, y, colour) {
 
 }
 
+function drawPurpleShip(x, y) {
+    ctx.beginPath();
+    ctx.moveTo(x + 0, y + 20);
+    ctx.lineTo(x + 10, y + 40); // trying to draw a diamond
+    ctx.lineTo(x + 50, y + 30);
+    ctx.lineTo(x + 20, y + 10);
+    ctx.lineTo(x + 0, y + 20);
+    
+    
+    // colour in with a gradient
+    var grd=ctx.createLinearGradient(x + 0, y + 10, x + 50, y + 20);
+    grd.addColorStop(0, "#565695");
+    grd.addColorStop(0.5, "#8080B3");
+    grd.addColorStop(1, "#09093B");
+    ctx.fillStyle=grd;
+    ctx.fill();
+    ctx.strokeStyle = "1A1A59";
+    ctx.stroke();
+    // add an arc
+    // ctx.arc(x, y, r, startangle, endangle);
+    ctx.beginPath();
+    ctx.arc(x + 15, y + 23, 10, ((Math.PI)*7/6), (Math.PI)/12, false);
+    ctx.arc(x + 19, y + 12, 15, ((Math.PI)/3), (Math.PI*11/13), false);
+    grd=ctx.createLinearGradient(x + 15, y + 5, x + 45, y + 40);
+    grd.addColorStop(0, "#565695");
+    grd.addColorStop(0.5, "white");
+    grd.addColorStop(1, "#09093B");
+    ctx.fillStyle=grd;
+    ctx.fill();
+    ctx.strokeStyle = "1A1A59";
+    ctx.stroke();
+}
+
 /*
  * Decrement in-game time by 1.
  *
@@ -712,11 +786,8 @@ function blackHole(x, y, colour) {
 function timer() {
     if(window.ingameTime > 0)  {
         window.ingameTime = window.ingameTime - 1;
-    } else {
-        if(gameLevel == 1) {
+    } else if(ingameTime === 0){
             nextLevel();
-        } else if(gameLevel == 2) {
-            finish();
-        }
     }
+
 }
