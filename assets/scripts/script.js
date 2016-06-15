@@ -171,7 +171,7 @@ function pauseOrDestroy(event) {
                     ((y >= tempY + 25) && (y <= tempY + 75))) {
                     incrementScore(blackHoles[i][0]);
                     blackHoles[i] = null;
-                    //alert("clicked a black hole at x: " + x + ", y: " + y);
+                    console.log("clicked a black hole at x: " + x + ", y: " + y);
                 }
             }
         }
@@ -190,6 +190,9 @@ function updateScore() {
     ctx.fillText("Score: " + gameScore, 300, 30);
 }
 
+/*
+ *
+ */
 function decrementScore () {
     gameScore -= 50;
     updateScore();
@@ -263,15 +266,18 @@ object.prototype.update = function() {
             	bHType = blackHoles[i][0];
             	bHX = blackHoles[i][1];
             	bHY = blackHoles[i][2];
+                bCenter = [bHX + 50, bHY + 50];
             	//Check if right side of object is past the left horizon
             	if ((this.x + 50 >= bHX) && (this.x + 50 <= bHX + 50)) {
             		//Check if bottom of object is past top horizon
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
+                        // approach from top left
             			this.tx = bHType;
             			this.ty = bHType;
             		}
             		//Check if top of object is past bottom horizon
             		if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
+                        // approach from bottom left
             			this.tx = bHType;
             			this.ty = -bHType;
             		}
@@ -279,10 +285,12 @@ object.prototype.update = function() {
             	//Check if left side of object is past the right horizon
             	if ((this.x >= bHX + 50) && (this.x <= bHX + 100)) {
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
+                        // approach from top right
             			this.tx = -bHType;
             			this.ty = bHType;
             		}
             		if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
+                        // approach from bottom right
             			this.tx = -bHType;
             			this.ty = -bHType;
             		}
@@ -294,7 +302,11 @@ object.prototype.update = function() {
             			this.eaten = 1;
             			//We'll want to update score and black hole counter for eaten objects here
                         decrementScore();
+                        console.log("black hole ate an object. this black hole's fullness is now " + blackHoles[i][3]);
                         incrementFullness(i, bHType);
+                        console.log("space object was eaten at x = " + this.x + "y = " +
+                                    this.y + ", (" + (this.x - bCenter[0]) + ", " + (this.y - bCenter[1]) +
+                                    ") from the center of the black hole.");
             		}
             	}
             }
@@ -302,9 +314,13 @@ object.prototype.update = function() {
 	}
 }
 
+/*
+ *
+ *
+ */
 function incrementFullness(i, type) {
+    blackHoles[i][3] += 1;
     var fullness = blackHoles[i][3];
-    fullness += 1;
     if(type == 1) {
         if(fullness == 3) {
             blackHoles[i] = null;
@@ -342,12 +358,12 @@ function generateXY(array) {
  */
 function spawnBlackHole() {
     debugger;
-    // Probability of spawning blue: 1/2; purple: 1/3; black: 1/6
-    var spawnArray = [1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3];
+    // Probability of spawning blue: 4/7; purple: 2/7; black: 1/7
+    var spawnArray = [1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3];
     
     if(window.ingameTime > 0 && window.paused === 0) {    
         // Randomly choose the type of black hole to be drawn
-        var blackHoleColour = spawnArray[(Math.floor(Math.random() * 12))];
+        var blackHoleColour = spawnArray[(Math.floor(Math.random() * 14))];
         console.log("going to draw a new black hole of type: " + blackHoleColour);
         var xy = [];
         generateXY(xy);
@@ -679,7 +695,7 @@ function blackHole(x, y, colour) {
     //    ctx.arc(x + 30, y + 30, 10, (Math.PI)/2, 3*(Math.PI)/2, false);
     //    ctx.closePath();
     //    ctx.fill();
-    console.log("drew a black hole");
+    //console.log("drew a black hole");
 
 }
 
