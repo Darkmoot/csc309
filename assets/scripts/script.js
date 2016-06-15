@@ -293,19 +293,30 @@ object.prototype.update = function() {
             		if ((this.y >= bHY + 20) && (this.y + 50 <= bHY + 80)) {
             			this.eaten = 1;
             			//We'll want to update score and black hole counter for eaten objects here
+                        decrementScore();
+                        incrementFullness(i, bHType);
             		}
             	}
-               /* if (((this.x >= blackHoles[i][1]) && (this.x <= (blackHoles[i][1] + 100)) ||
-                    ((this.x + 50 >= blackHoles[i][1]) && (this.x + 50 <= (blackHoles[i][1] + 100)))) &&
-                   (((this.y >= blackHoles[i][2]) && (this.y <= (blackHoles[i][2] + 100))) ||
-                   ((this.y + 50 >= blackHoles[i][2]) && (this.y + 50 <= (blackHoles[i][2] + 100))))) {
-                    //
-                }*/
             }
         }
 	}
 }
 
+function incrementFullness(i, type) {
+    var fullness = blackHoles[i][3];
+    fullness += 1;
+    if(type == 1) {
+        if(fullness == 3) {
+            blackHoles[i] = null;
+        }
+    } else if(type == 2) {
+        if(fullness == 2) {
+            blackHoles[i] = null;
+        }
+    } else if(type == 3) {
+        blackHoles[i] = null;
+    }
+}
 
 function generateXY(array) {
     x = Math.floor((Math.random() * 900));
@@ -341,7 +352,7 @@ function spawnBlackHole() {
         var xy = [];
         generateXY(xy);
         
-        var curr = [blackHoleColour, xy[0], xy[1]];
+        var curr = [blackHoleColour, xy[0], xy[1], 0];
         blackHole(x, y, blackHoleColour);
         window.blackHoles.push(curr);
         console.log("pushed a new black hole onto the array, with x = " + xy[0] + ", y = " + xy[1]);
