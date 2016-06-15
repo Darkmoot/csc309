@@ -14,7 +14,7 @@ window.onload = function() {
     window.gameLevel = 1;
     window.gameScore = 200;
     // Store the functions to be drawn in an array.
-    window.drawings = [moon, planet, spaceship, deadStickPerson];
+    window.drawings = [moon, planet, spaceship, deadStickPerson, robot];
     // Store the offset positions of x and y.
     window.canvasLeft = canvas.offsetLeft;
     // Hard-coding this value since it's not giving me what I expect
@@ -412,7 +412,7 @@ function drawObjects() {
 			}
 		}
 		 // Choose the function to draw and store it in a local variable.
-		var currDrawing = (window.drawings[Math.floor((Math.random() * 4))]);
+		var currDrawing = (window.drawings[Math.floor((Math.random() * 5))]);
 		// Create the object and push onto array
 		var obj = new object(randomX, randomY, randomTX, randomTY, currDrawing, 0);
 		window.drawnDrawings.push(obj);
@@ -692,6 +692,65 @@ function deadStickPerson(x, y) {
 	
 	
 	ctx.stroke();
+	ctx.closePath();
+}
+
+//Draw a poor robot, floating forever through the infinity of space
+function robot(x, y) {
+	ctx.beginPath();
+	ctx.rect(x+5, y+5, 40, 20);
+	ctx.fillStyle = 'black';
+	ctx.fill();
+	ctx.stroke();
+	ctx.closePath();
+	
+	ctx.beginPath();
+	ctx.moveTo(x+25, y+25);
+	ctx.lineTo(x+25, y+40);
+	ctx.lineTo(x+10, y+30);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+40, y+30);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+5, y+35);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+45, y+35);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+5, y+40);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+45, y+40);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+10, y+45);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+40, y+45);
+	
+	ctx.stroke();
+	ctx.closePath();
+	
+	ctx.beginPath();
+	ctx.arc(x+20,y+10, 3, 0, 2*Math.PI);
+	ctx.fillStyle = 'red';
+	ctx.fill();
+	ctx.stroke();
+	ctx.closePath();
+	ctx.beginPath();
+	ctx.arc(x+30,y+10, 3, 0, 2*Math.PI);
+	ctx.fill();
+	ctx.stroke();
+	ctx.closePath();
+	
+	ctx.beginPath();
+	ctx.moveTo(x+17, y+19);
+	ctx.lineTo(x+19, y+17);
+	ctx.lineTo(x+21, y+19);
+	ctx.lineTo(x+23, y+17);
+	ctx.lineTo(x+25, y+19);
+	ctx.lineTo(x+27, y+17);
+	ctx.lineTo(x+29, y+19);
+	ctx.lineTo(x+31, y+17);
+	ctx.lineTo(x+33, y+19);
+	ctx.strokeStyle = 'red';
+	ctx.stroke();
+	ctx.strokeStyle = '#000000';
 	ctx.closePath();
 }
 
