@@ -18,7 +18,7 @@ window.onload = function() {
     window.spawnIntervalID = null;
     window.animationFrameID = null;
     // Store the functions to be drawn in an array.
-    window.drawings = [moon, planet, spaceship, drawPurpleShip];
+    window.drawings = [moon, planet, spaceship, deadStickPerson, robot, drawPurpleShip];
     // Store the offset positions of x and y.
     window.canvasLeft = canvas.offsetLeft;
     // Hard-coding this value since it's not giving me what I expect
@@ -271,19 +271,31 @@ object.prototype.update = function() {
             	bHX = blackHoles[i][1];
             	bHY = blackHoles[i][2];
                 bCenter = [bHX + 50, bHY + 50];
+                if ((this.x + 25 >= bHX) && (this.x + 25 <= bHX + 100)) {
+                	 if ((this.y + 25 >= bHY) && (this.y + 25 <= bHY + 100)) {
+                		 diffX = (bHX + 50) - (this.x + 25);
+                		 diffY = (bHY + 50) - (this.y + 25);
+                		 if (diffX >= 0) {
+                			 this.tx = Math.ceil(diffX / 40) * bHType;
+                		 } else {
+                			 this.tx = Math.floor(diffX / 40) * bHType;
+                		 }
+                		 if (diffY >= 0) {
+                			 this.ty = Math.ceil(diffY / 40) * bHType;
+                		 } else {
+                			 this.ty = Math.floor(diffY / 40) * bHType;
+                		 }
+                	 }
+                }
             	//Check if right side of object is past the left horizon
-            	if ((this.x + 50 >= bHX) && (this.x + 50 <= bHX + 50)) {
+                else if ((this.x + 50 >= bHX) && (this.x + 50 <= bHX + 50)) {
             		//Check if bottom of object is past top horizon
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
-            			//this.tx = Math.min(bHType, Math.round((bHX+50-this.x+25)/5));
-            			//this.ty = Math.min(bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = bHType;
             			this.ty = bHType;
             		}
             		//Check if top of object is past bottom horizon
             		else if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
-            			//this.tx = Math.min(bHType, Math.round((bHX+50-this.x+25)/5));
-            			//this.ty = Math.min(-bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = bHType;
             			this.ty = -bHType;
             		}
@@ -292,26 +304,22 @@ object.prototype.update = function() {
             	else if ((this.x >= bHX + 50) && (this.x <= bHX + 100)) {
             		//Bottom-object past top
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
-            			//this.tx = Math.min(-bHType, Math.round((bHX+50-this.x+25)/5));
-            			//this.ty = Math.min(bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = -bHType;
             			this.ty = bHType;
             		}
             		//Top-object past bottom
             		else if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
-            			//this.tx = Math.min(-bHType, Math.round((bHX+50-this.x+25)/5));
-            			//this.ty = Math.min(-bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = -bHType;
             			this.ty = -bHType;
             		}
             	}
             	//If object has reached middle of black hole, eat it
             	//eaten = 1 means it no longer gets drawn
-            	if ((this.x + 25 >= bHX + 25) && (this.x + 25 <= bHX + 75)) {
-            		if ((this.y + 25 >= bHY + 25) && (this.y + 25 <= bHY + 75)) {
+            	if ((this.x + 25 >= bHX + 40) && (this.x + 25 <= bHX + 60)) {
+            		if ((this.y + 25 >= bHY + 40) && (this.y + 25 <= bHY + 60)) {
             			this.eaten = 1;
                         window.objectsLeft -= 1;
-            			//We'll want to update score and black hole counter for eaten objects here
+            			//Update score and black hole counter for eaten objects here
                         decrementScore();
                         incrementFullness(i, bHType);
                         console.log("space object was eaten at x = " + this.x + "y = " +
@@ -416,7 +424,7 @@ function drawObjects() {
 			}
 		}
 		 // Choose the function to draw and store it in a local variable.
-		var currDrawing = (window.drawings[Math.floor((Math.random() * 4))]);
+		var currDrawing = (window.drawings[Math.floor((Math.random() * 6))]);
 		// Create the object and push onto array
 		var obj = new object(randomX, randomY, randomTX, randomTY, currDrawing, 0);
 		window.drawnDrawings.push(obj);
@@ -449,10 +457,8 @@ function start() {
     drawnDrawings = [];
     objectsLeft = 10;
     drawCanvas();
-    //initSpaceObjects();
     drawObjects();
     //setInterval(drawSpaceObjects, 33);
-    //requestAnimationFrame(drawSpaceObjects);
     // Call the drawTimer function every second (every 1000 milliseconds)
     // in order to decrement the game timer.
     intervalID = setInterval(drawTimer, 1000);
@@ -692,6 +698,101 @@ function moon(x, y) {
 	ctx.closePath();
 	//reset globalCompositeOperation to default
 	ctx.globalCompositeOperation = 'source-over';
+}
+
+//Draw a stick person who has unfortunately died in the void of space
+function deadStickPerson(x, y) {
+	ctx.beginPath();
+	ctx.moveTo(x + 10, y + 35);
+	ctx.lineTo(x+25, y+20);
+	ctx.moveTo(x+20, y+25);
+	ctx.lineTo(x+20, y+15);
+	ctx.moveTo(x+20, y+25);
+	ctx.lineTo(x+30, y+25);
+	ctx.moveTo(x+10, y+35);
+	ctx.lineTo(x+0, y+35);
+	ctx.moveTo(x+10, y+35);
+	ctx.lineTo(x+10, y+45);
+	
+	ctx.stroke();
+	ctx.closePath();
+	ctx.beginPath();
+	ctx.arc(x+33, y+12, 10, 0, 2*Math.PI);
+	ctx.fillStyle = 'blue';
+	ctx.fill();
+	
+	ctx.moveTo(x+33, y+11);
+	ctx.lineTo(x+33, y+5);
+	ctx.moveTo(x+30, y+8);
+	ctx.lineTo(x+36, y+ 8);
+	
+	ctx.moveTo(x+34, y+12);
+	ctx.lineTo(x+40, y+12);
+	ctx.moveTo(x+37, y+9);
+	ctx.lineTo(x+37, y+ 15);
+	
+	
+	ctx.stroke();
+	ctx.closePath();
+}
+
+//Draw a poor robot, floating forever through the infinity of space
+function robot(x, y) {
+	ctx.beginPath();
+	ctx.rect(x+5, y+5, 40, 20);
+	ctx.fillStyle = 'black';
+	ctx.fill();
+	ctx.stroke();
+	ctx.closePath();
+	
+	ctx.beginPath();
+	ctx.moveTo(x+25, y+25);
+	ctx.lineTo(x+25, y+40);
+	ctx.lineTo(x+10, y+30);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+40, y+30);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+5, y+35);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+45, y+35);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+5, y+40);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+45, y+40);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+10, y+45);
+	ctx.moveTo(x+25, y+40);
+	ctx.lineTo(x+40, y+45);
+	
+	ctx.stroke();
+	ctx.closePath();
+	
+	ctx.beginPath();
+	ctx.arc(x+20,y+10, 3, 0, 2*Math.PI);
+	ctx.fillStyle = 'red';
+	ctx.fill();
+	ctx.stroke();
+	ctx.closePath();
+	ctx.beginPath();
+	ctx.arc(x+30,y+10, 3, 0, 2*Math.PI);
+	ctx.fill();
+	ctx.stroke();
+	ctx.closePath();
+	
+	ctx.beginPath();
+	ctx.moveTo(x+17, y+19);
+	ctx.lineTo(x+19, y+17);
+	ctx.lineTo(x+21, y+19);
+	ctx.lineTo(x+23, y+17);
+	ctx.lineTo(x+25, y+19);
+	ctx.lineTo(x+27, y+17);
+	ctx.lineTo(x+29, y+19);
+	ctx.lineTo(x+31, y+17);
+	ctx.lineTo(x+33, y+19);
+	ctx.strokeStyle = 'red';
+	ctx.stroke();
+	ctx.strokeStyle = '#000000';
+	ctx.closePath();
 }
 
 function blackHole(x, y, colour) {
