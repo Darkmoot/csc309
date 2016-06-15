@@ -271,34 +271,40 @@ object.prototype.update = function() {
             	if ((this.x + 50 >= bHX) && (this.x + 50 <= bHX + 50)) {
             		//Check if bottom of object is past top horizon
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
-                        // approach from top left
+            			//this.tx = Math.min(bHType, Math.round((bHX+50-this.x+25)/5));
+            			//this.ty = Math.min(bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = bHType;
             			this.ty = bHType;
             		}
             		//Check if top of object is past bottom horizon
-            		if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
-                        // approach from bottom left
+            		else if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
+            			//this.tx = Math.min(bHType, Math.round((bHX+50-this.x+25)/5));
+            			//this.ty = Math.min(-bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = bHType;
             			this.ty = -bHType;
             		}
             	}
             	//Check if left side of object is past the right horizon
-            	if ((this.x >= bHX + 50) && (this.x <= bHX + 100)) {
+            	else if ((this.x >= bHX + 50) && (this.x <= bHX + 100)) {
+            		//Bottom-object past top
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
-                        // approach from top right
+            			//this.tx = Math.min(-bHType, Math.round((bHX+50-this.x+25)/5));
+            			//this.ty = Math.min(bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = -bHType;
             			this.ty = bHType;
             		}
-            		if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
-                        // approach from bottom right
+            		//Top-object past bottom
+            		else if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
+            			//this.tx = Math.min(-bHType, Math.round((bHX+50-this.x+25)/5));
+            			//this.ty = Math.min(-bHType, Math.round((bHY+50-this.y+25)/5));
             			this.tx = -bHType;
             			this.ty = -bHType;
             		}
             	}
             	//If object has reached middle of black hole, eat it
             	//eaten = 1 means it no longer gets drawn
-            	if ((this.x >= bHX + 20) && (this.x + 50 <= bHX + 80)) {
-            		if ((this.y >= bHY + 20) && (this.y + 50 <= bHY + 80)) {
+            	if ((this.x + 25 >= bHX + 25) && (this.x + 25 <= bHX + 75)) {
+            		if ((this.y + 25 >= bHY + 25) && (this.y + 25 <= bHY + 75)) {
             			this.eaten = 1;
             			//We'll want to update score and black hole counter for eaten objects here
                         decrementScore();
