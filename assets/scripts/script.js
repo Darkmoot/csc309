@@ -208,23 +208,25 @@ object.prototype.update = function() {
             	bHY = blackHoles[i][2];
             	//Check if right side of object is past the left horizon
             	if ((this.x + 50 >= bHX) && (this.x + 50 <= bHX + 50)) {
-            		this.tx = bHType;
             		//Check if bottom of object is past top horizon
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
+            			this.tx = bHType;
             			this.ty = bHType;
             		}
             		//Check if top of object is past bottom horizon
             		if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
+            			this.tx = bHType;
             			this.ty = -bHType;
             		}
             	}
             	//Check if left side of object is past the right horizon
             	if ((this.x >= bHX + 50) && (this.x <= bHX + 100)) {
-            		this.tx = -bHType;
             		if ((this.y + 50 >= bHY) && (this.y + 50 <=bHY + 50)) {
+            			this.tx = -bHType;
             			this.ty = bHType;
             		}
             		if ((this.y >= bHY + 50) && (this.y <= bHY + 100)) {
+            			this.tx = -bHType;
             			this.ty = -bHType;
             		}
             	}
@@ -233,6 +235,7 @@ object.prototype.update = function() {
             	if ((this.x >= bHX + 20) && (this.x + 50 <= bHX + 80)) {
             		if ((this.y >= bHY + 20) && (this.y + 50 <= bHY + 80)) {
             			this.eaten = 1;
+            			//We'll want to update score and black hole counter for eaten objects here
             		}
             	}
                /* if (((this.x >= blackHoles[i][1]) && (this.x <= (blackHoles[i][1] + 100)) ||
