@@ -14,7 +14,7 @@ window.onload = function() {
     window.gameLevel = 1;
     window.gameScore = 200;
     // Store the functions to be drawn in an array.
-    window.drawings = [moon, planet, spaceship];
+    window.drawings = [moon, planet, spaceship, deadStickPerson];
     // Store the offset positions of x and y.
     window.canvasLeft = canvas.offsetLeft;
     // Hard-coding this value since it's not giving me what I expect
@@ -412,7 +412,7 @@ function drawObjects() {
 			}
 		}
 		 // Choose the function to draw and store it in a local variable.
-		var currDrawing = (window.drawings[Math.floor((Math.random() * 3))]);
+		var currDrawing = (window.drawings[Math.floor((Math.random() * 4))]);
 		// Create the object and push onto array
 		var obj = new object(randomX, randomY, randomTX, randomTY, currDrawing, 0);
 		window.drawnDrawings.push(obj);
@@ -657,6 +657,42 @@ function moon(x, y) {
 	ctx.closePath();
 	//reset globalCompositeOperation to default
 	ctx.globalCompositeOperation = 'source-over';
+}
+
+//Draw a stick person who has unfortunately died in the void of space
+function deadStickPerson(x, y) {
+	ctx.beginPath();
+	ctx.moveTo(x + 10, y + 35);
+	ctx.lineTo(x+25, y+20);
+	ctx.moveTo(x+20, y+25);
+	ctx.lineTo(x+20, y+15);
+	ctx.moveTo(x+20, y+25);
+	ctx.lineTo(x+30, y+25);
+	ctx.moveTo(x+10, y+35);
+	ctx.lineTo(x+0, y+35);
+	ctx.moveTo(x+10, y+35);
+	ctx.lineTo(x+10, y+45);
+	
+	ctx.stroke();
+	ctx.closePath();
+	ctx.beginPath();
+	ctx.arc(x+33, y+12, 10, 0, 2*Math.PI);
+	ctx.fillStyle = 'blue';
+	ctx.fill();
+	
+	ctx.moveTo(x+33, y+11);
+	ctx.lineTo(x+33, y+5);
+	ctx.moveTo(x+30, y+8);
+	ctx.lineTo(x+36, y+ 8);
+	
+	ctx.moveTo(x+34, y+12);
+	ctx.lineTo(x+40, y+12);
+	ctx.moveTo(x+37, y+9);
+	ctx.lineTo(x+37, y+ 15);
+	
+	
+	ctx.stroke();
+	ctx.closePath();
 }
 
 function blackHole(x, y, colour) {
