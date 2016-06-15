@@ -17,6 +17,7 @@ window.onload = function() {
     window.intervalID = null;
     window.spawnIntervalID = null;
     window.animationFrameID = null;
+    drawAndUpdateInterval = null;
     // Store the functions to be drawn in an array.
     window.drawings = [moon, planet, spaceship, deadStickPerson, robot, drawPurpleShip];
     // Store the offset positions of x and y.
@@ -429,7 +430,7 @@ function drawObjects() {
 		var obj = new object(randomX, randomY, randomTX, randomTY, currDrawing, 0);
 		window.drawnDrawings.push(obj);
 	}
-	drawAndUpdate();
+	drawAndUpdateInterval = setInterval(drawAndUpdate, 11);
 }
 
 function drawAndUpdate() {
@@ -440,7 +441,6 @@ function drawAndUpdate() {
 		myObject.update();
 	}
     drawBlackHoles();
-	animationFrameID = requestAnimationFrame(drawAndUpdate);
 }
 
 
@@ -464,9 +464,9 @@ function start() {
     intervalID = setInterval(drawTimer, 1000);
     if(gameLevel === 1) {
         // Spawn a new black hole every 3 seconds
-        spawnIntervalID = setInterval(spawnBlackHole, 3000);
+        spawnIntervalID = setInterval(spawnBlackHole, 2500);
     } else if(gameLevel === 2) {
-        spawnIntervalID = setInterval(spawnBlackHole, 1500);
+        spawnIntervalID = setInterval(spawnBlackHole, 1250);
     }
 }
 
@@ -493,9 +493,10 @@ function finish() {
  *
  */
 function nextLevel() {
-    cancelAnimationFrame(animationFrameID);
+    //cancelAnimationFrame(animationFrameID);
     clearInterval(intervalID);
     clearInterval(spawnIntervalID);
+    clearInterval(drawAndUpdateInterval);
     document.getElementById("startPage").style.display = "block";
     document.getElementById("levelOnePage").style.display = "none";
     if(gameLevel == 1) {
